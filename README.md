@@ -34,6 +34,15 @@ Made with [tgcalls](https://github.com/MarshalX/tgcalls) and [Pyrogram Smart Plu
 4. Run with `python userbot.py`
 5. Stop with <kbd>CTRL+C</kbd>
 
+## Notes
+
+- The Player plugin [plugins/vc/player.py](plugins/vc/player.py) is
+  probably the one you need, read the module docstrings at the
+  beginning of the file
+- Commands are available to the UserBot account itself only to simplify
+  the source code, it's easy for you to fork the project, make your
+  modification to fit your needs
+
 # License
 
 AGPL-3.0-or-later

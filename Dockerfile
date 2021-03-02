@@ -9,3 +9,6 @@ RUN apt-get install -y ffmpeg opus-tools bpm-tools
 RUN python -m pip install --upgrade pip
 RUN python -m pip install wheel Pyrogram TgCrypto
 RUN python -m pip install pytgcalls ffmpeg-python
+
+# docker build -t tgcalls .
+# docker run -it --rm --name tgvc-userbot -v $PWD:/bot tgcalls python /bot/userbot.py
