@@ -1,7 +1,24 @@
 """Play and Control Audio playing in Telegram Voice Chat
 
+This Pyrogram Smart Plugin requires this constant to be set:
+
 # ../config.py
 INPUT_FILENAME = '/bot/downloads/input.raw'
+
+After start the bot, use the userbot account to send !join_vc command
+in a group where voice chat is already started, after it join the voice
+chat, reply an audio in the group with !play to play it in the current
+voice chat.
+
+Commands:
+!join_vc   join the current voice chat
+!play      reply to an audio to play it in current voice chat
+!list_vc   list joined voice chats
+!leave_vc  leave the current voice chat
+!stop      stop
+!replay    play the track from beginning
+!mute      mute the userbot in the current voice chat
+!unmute    unmute the userbot in the current voice chat
 
 """
 import os
