@@ -1,0 +1,13 @@
+# vim
+[._]*.sw[a-p]
+
+# python
+/venv/
+__pycache__/
+
+# Pyrogram
+/config.ini
+/config.py
+/*.session
+/*.session-journal
+/downloads/
