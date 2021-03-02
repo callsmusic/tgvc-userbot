@@ -25,7 +25,6 @@ Made with [tgcalls](https://github.com/MarshalX/tgcalls) and [Pyrogram Smart Plu
    [pyrogram]
    api_id = 1234567
    api_hash = 0123456789abcdef0123456789abcdef
-   bot_token = 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
 
    [plugins]
    root = plugins
