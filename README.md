@@ -17,7 +17,8 @@ Made with [tgcalls](https://github.com/MarshalX/tgcalls) and [Pyrogram Smart Plu
 1. prepare python and pip, optionally use `virtualenv`, a `Dockerfile` is
    provided in the repo as well
 2. `pip install -U -r requirements.txt` to install the requirements
-3. Create a new `config.ini` file, copy-paste the following and replace the
+3. Go to [plugins/](plugins/) and choose which plugin you need, create
+   a new `config.ini` file, copy-paste the following and replace the
    values with your own. Exclude or include plugins to fit your needs.
    Create `config.py` and add constants that are specified in module
    docstrings of enabled plugins.
