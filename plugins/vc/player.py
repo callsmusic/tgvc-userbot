@@ -162,7 +162,7 @@ async def play_track(client, message: Message):
                                               limit=1):
             if m.audio:
                 await m.unpin()
-        await message.reply_to_message.pin()
+        await message.reply_to_message.pin(True)
     except ChatAdminRequired:
         pass
     except FloodWait:
