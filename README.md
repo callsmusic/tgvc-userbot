@@ -6,41 +6,73 @@ This is also the source code of the userbot which is being used for playing DJ/L
 
 Made with [tgcalls](https://github.com/MarshalX/tgcalls) and [Pyrogram Smart Plugin](https://docs.pyrogram.org/topics/smart-plugins)
 
+|              | vc.player               | vc.recorder                   | ping            |
+|--------------|-------------------------|-------------------------------|-----------------|
+| Description  | Voice Chat Audio Player | Voice Chat Audio Recorder     | ping and uptime |
+| Dependencies | ffmpeg                  | ffmpeg, opus-tools, bpm-tools |                 |
+| Conflict     | vc.recorder             | vc.player                     |                 |
+
 ## Requirements
 
 - Python 3.6 or higher
 - A [Telegram API key](https://docs.pyrogram.org/intro/quickstart#enjoy-the-api) and a Telegram account
-- FFmpeg
+- Choose plugins you need, install dependencies which listed above and run `pip install -U -r requirements.txt` to install python package dependencies as well
 
 ## Run
 
-1. prepare python and pip, optionally use `virtualenv`, a `Dockerfile` is
-   provided in the repo as well
-2. `pip install -U -r requirements.txt` to install the requirements
-3. Go to [plugins/](plugins/) and choose which plugin you need, create
-   a new `config.ini` file, copy-paste the following and replace the
-   values with your own. Exclude or include plugins to fit your needs.
-   Create `config.py` and add constants that are specified in module
-   docstrings of enabled plugins.
-   ```
-   [pyrogram]
-   api_id = 1234567
-   api_hash = 0123456789abcdef0123456789abcdef
+Choose one of the two methods and run the userbot with
+`python userbot.py`, stop with <kbd>CTRL+c</kbd>. The following example
+assume that you were going to use `vc.player` and `ping` plugin, replace
+`api_id`, `api_hash` to your own value.
 
-   [plugins]
-   root = plugins
-   include = vc.player
-   ```
-4. Run with `python userbot.py`
-5. Stop with <kbd>CTRL+C</kbd>
+### Method 1: use config.ini
+
+Create a `config.ini` file
+
+```
+[pyrogram]
+api_id = 1234567
+api_hash = 0123456789abcdef0123456789abcdef
+
+[plugins]
+root = plugins
+include =
+    vc.player
+    ping
+```
+
+### Method 2: write your own userbot.py
+
+Replace the file content of `userbot.py`
+
+```
+from pyrogram import Client, idle
+
+api_id = 1234567
+api_hash = "0123456789abcdef0123456789abcdef"
+
+plugins = dict(
+    root="plugins",
+    include=[
+        "vc.player",
+        "ping"
+    ]
+)
+
+app = Client("tgvc", api_id, api_hash, plugins=plugins)
+app.start()
+print('>>> USERBOT STARTED')
+idle()
+app.stop()
+print('\n>>> USERBOT STOPPED')
+```
 
 ## Notes
 
-- The Player plugin [plugins/vc/player.py](plugins/vc/player.py) is
-  probably the one you need, read the module docstrings at the
-  beginning of the file
+- Read module docstrings of [plugins/](plugins) you are going to use at
+  the beginning of the file for extra notes
 - Commands are available to the UserBot account itself only to simplify
-  the source code, it's easy for you to fork the project, make your
+  the source code, it's easy for you to fork the project and make
   modification to fit your needs
 
 # License

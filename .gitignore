@@ -6,8 +6,9 @@
 __pycache__/
 
 # Pyrogram
-/config.ini
-/config.py
+/*.py
+!/userbot.py
+/*.ini
 /*.session
 /*.session-journal
 /downloads/

@@ -1,14 +1,14 @@
 """Play and Control Audio playing in Telegram Voice Chat
 
-This Pyrogram Smart Plugin requires this constant to be set:
+Dependencies:
+- ffmpeg
 
-# ../config.py
-INPUT_FILENAME = '/bot/downloads/input.raw'
+Recommended admin permissions:
+- Pin messages
+- Manage voice chats
 
-After start the bot, use the userbot account to send !join_vc command
-in a group where voice chat is already started, after it join the voice
-chat, reply an audio in the group with !play to play it in the current
-voice chat.
+Start the bot, reply to an audio with !play to play it
+in the current voice chat
 
 Commands:
 !join_vc   join the current voice chat
@@ -22,13 +22,15 @@ Commands:
 
 """
 import os
-import ffmpeg
-from pyrogram import Client, filters
+from pyrogram import Client, filters, emoji
 from pyrogram.types import Message
+from pyrogram.methods.messages.download_media import DEFAULT_DOWNLOAD_DIR
 from pyrogram.raw.functions.channels import GetFullChannel
 from pyrogram.raw.functions.phone import LeaveGroupCall
+from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
+from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pytgcalls import GroupCall
-from config import INPUT_FILENAME
+import ffmpeg
 
 VOICE_CHATS = {}
 
@@ -38,14 +40,20 @@ VOICE_CHATS = {}
                    & ~filters.edited
                    & filters.regex("^!join_vc$"))
 async def join_voice_chat(client, message: Message):
+    input_filename = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR,
+                                  "input.raw")
     if message.chat.id in VOICE_CHATS:
-        await message.edit_text("`[userbot]`: already joined")
+        await update_userbot_message(message, message.text, " Already joined")
         return
     chat_id = message.chat.id
-    group_call = GroupCall(client, INPUT_FILENAME)
-    await group_call.start(chat_id)
+    group_call = GroupCall(client, input_filename)
+    await group_call.start(chat_id, False)
     VOICE_CHATS[chat_id] = group_call
-    await message.edit_text("`[userbot]`: Joined Voice Chat")
+    await update_userbot_message(
+        message,
+        message.text,
+        " Joined the Voice Chat"
+    )
 
 
 @Client.on_message(filters.text
@@ -56,7 +64,7 @@ async def leave_voice_chat(client, message: Message):
     chat_id = message.chat.id
     await leave_group_call(client, chat_id)
     VOICE_CHATS.pop(chat_id, None)
-    await message.edit_text("`[userbot]`: Left Voice Chat")
+    await update_userbot_message(message, message.text, " Left the Voice Chat")
 
 
 async def leave_group_call(client, chat_id):
@@ -72,13 +80,21 @@ async def leave_group_call(client, chat_id):
                    & filters.regex("^!list_vc$"))
 async def list_voice_chat(client, message: Message):
     if not VOICE_CHATS:
-        await message.edit_text("`[userbot]`: Didn't join any voice chat yet")
+        await update_userbot_message(
+            message,
+            message.text,
+            " Didn't join any voice chat yet"
+        )
         return
     vc_chats = ""
     for chat_id in VOICE_CHATS:
         chat = await client.get_chat(chat_id)
         vc_chats += f"- **{chat.title}**\n"
-    await message.edit_text(f"`[userbot]`: currently joined:\n{vc_chats}")
+    await update_userbot_message(
+        message,
+        message.text,
+        f" Currently joined:\n{vc_chats}"
+    )
 
 
 @Client.on_message(filters.text
@@ -86,46 +102,82 @@ async def list_voice_chat(client, message: Message):
                    & ~filters.edited
                    & filters.regex("^!stop$"))
 async def stop_playing(_, message: Message):
-    chat_id = message.chat.id
-    group_call = VOICE_CHATS[chat_id]
+    group_call = VOICE_CHATS[message.chat.id]
     group_call.stop_playout()
-    await message.edit_text("`[userbot]`: Stopped Playing")
+    await update_userbot_message(message, message.text, " Stopped Playing")
 
 
 @Client.on_message(filters.text
                    & filters.outgoing
                    & ~filters.edited
                    & filters.regex("^!replay$"))
-async def restart_playing(_, message: Message):
-    chat_id = message.chat.id
-    group_call = VOICE_CHATS[chat_id]
-    group_call.input_filename = INPUT_FILENAME
+async def restart_playing(client, message: Message):
+    input_filename = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR,
+                                  "input.raw")
+    if not VOICE_CHATS or message.chat.id not in VOICE_CHATS:
+        group_call = GroupCall(client, input_filename)
+        await group_call.start(message.chat.id, False)
+        VOICE_CHATS[message.chat.id] = group_call
+        await update_userbot_message(
+            message,
+            message.text,
+            " Joined the Voice Chat and Playing from the Beginning..."
+        )
+        return
+    group_call = VOICE_CHATS[message.chat.id]
+    group_call.input_filename = input_filename
     group_call.restart_playout()
-    await message.edit_text("`[userbot]`: Playing from beginning...")
+    await update_userbot_message(
+        message,
+        message.text,
+        " Playing from the beginning..."
+    )
 
 
 @Client.on_message(filters.text
                    & filters.outgoing
                    & ~filters.edited
                    & filters.regex("^!play$"))
-async def play_track(_, message: Message):
+async def play_track(client, message: Message):
     if not message.reply_to_message or not message.reply_to_message.audio:
         return
-    if not VOICE_CHATS or message.chat.id not in VOICE_CHATS:
-        await message.edit_text("`[userbot]`: not joined the current VC yet")
-        return
+    input_filename = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR,
+                                  "input.raw")
     audio = message.reply_to_message.audio
-    await message.edit_text("`[userbot]`: **1/3** Downloading audio file...")
+    status = "\n- Downloading audio file..."
+    await update_userbot_message(message, message.text, status)
     audio_original = await message.reply_to_message.download()
-    await message.edit_text("`[userbot]`: **2/3** Transcoding...")
+    status += "\n- Transcoding..."
+    await update_userbot_message(message, message.text, status)
     ffmpeg.input(audio_original).output(
-        INPUT_FILENAME,
+        input_filename,
         format='s16le',
         acodec='pcm_s16le',
         ac=2, ar='48k'
     ).overwrite_output().run()
-    await message.edit_text(f"`[userbot]`: Playing **{audio.title}**...")
     os.remove(audio_original)
+    try:
+        async for m in client.search_messages(message.chat.id,
+                                              filter="pinned",
+                                              limit=1):
+            if m.audio:
+                await m.unpin()
+        await message.reply_to_message.pin()
+    except ChatAdminRequired:
+        pass
+    except FloodWait:
+        pass
+    if VOICE_CHATS and message.chat.id in VOICE_CHATS:
+        status += f"\n- Playing **{audio.title}**..."
+        await update_userbot_message(message, message.text, status)
+    else:
+        group_call = GroupCall(client, input_filename)
+        await group_call.start(message.chat.id, False)
+        VOICE_CHATS[message.chat.id] = group_call
+        status += (
+            f"\n- Joined the Voice Chat...\n- Playing **{audio.title}**..."
+        )
+        await update_userbot_message(message, message.text, status)
 
 
 @Client.on_message(filters.text
@@ -133,10 +185,9 @@ async def play_track(_, message: Message):
                    & ~filters.edited
                    & filters.regex("^!mute$"))
 async def mute(_, message: Message):
-    chat_id = message.chat.id
-    group_call = VOICE_CHATS[chat_id]
+    group_call = VOICE_CHATS[message.chat.id]
     group_call.set_is_mute(True)
-    await message.edit_text("`[userbot]`: Muted")
+    await update_userbot_message(message, message.text, " Muted")
 
 
 @Client.on_message(filters.text
@@ -144,7 +195,11 @@ async def mute(_, message: Message):
                    & ~filters.edited
                    & filters.regex("^!unmute$"))
 async def unmute(_, message: Message):
-    chat_id = message.chat.id
-    group_call = VOICE_CHATS[chat_id]
+    group_call = VOICE_CHATS[message.chat.id]
     group_call.set_is_mute(False)
-    await message.edit_text("`[userbot]`: Unmuted")
+    await update_userbot_message(message, message.text, " Unmuted")
+
+
+async def update_userbot_message(message: Message, text_user, text_bot):
+    await message.edit_text(f"{emoji.SPEECH_BALLOON} `{text_user}`\n"
+                            f"{emoji.ROBOT}{text_bot}")
