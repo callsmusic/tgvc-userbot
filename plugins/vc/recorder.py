@@ -18,8 +18,6 @@ from datetime import datetime
 from pyrogram import Client, filters, emoji
 from pyrogram.types import Message
 from pyrogram.methods.messages.download_media import DEFAULT_DOWNLOAD_DIR
-from pyrogram.raw.functions.channels import GetFullChannel
-from pyrogram.raw.functions.phone import LeaveGroupCall
 from pytgcalls import GroupCall
 import ffmpeg
 
@@ -53,16 +51,10 @@ async def join_voice_chat(client, message: Message):
                    & filters.regex("^!leave_vc$"))
 async def leave_voice_chat(client, message: Message):
     chat_id = message.chat.id
-    await leave_group_call(client, chat_id)
+    group_call = VOICE_CHATS[chat_id]
+    await group_call.stop()
     VOICE_CHATS.pop(chat_id, None)
     await update_userbot_message(message, message.text, " Left the Voice Chat")
-
-
-async def leave_group_call(client, chat_id):
-    peer = await client.resolve_peer(chat_id)
-    full_chat = await client.send(GetFullChannel(channel=peer))
-    chat_call = full_chat.full_chat.call
-    await client.send(LeaveGroupCall(call=chat_call, source=0))
 
 
 @Client.on_message(filters.text
@@ -103,8 +95,8 @@ async def record_audio(client, message: Message):
     chat = message.chat
     if not VOICE_CHATS or chat.id not in VOICE_CHATS:
         group_call = GroupCall(client)
-        await group_call.start(message.chat.id, False)
-        VOICE_CHATS[message.chat.id] = group_call
+        await group_call.start(chat.id, False)
+        VOICE_CHATS[chat.id] = group_call
         status = (
             "\n- Joined the Voice Chat, send the command again to record"
         )
@@ -126,9 +118,9 @@ async def record_audio(client, message: Message):
             f"{status} **{time_spent}/{duration}**"
         )
     group_call.stop_output()
-    group_call.output_filename = ''
     status += "\n- transcoding..."
-    record_opus = f"/bot/vcrec-{time_record.strftime('%s')}.opus"
+    record_opus = os.path.join(download_dir,
+                               f"vcrec-{time_record.strftime('%s')}.opus")
     await update_userbot_message(message, message.text, status)
     ffmpeg.input(
         record_raw,
@@ -158,7 +150,6 @@ async def record_audio(client, message: Message):
         f"- Bit rate: `{probe['format']['bit_rate']}`\n"
         f"- File size: `{probe['format']['size']}`"
     )
-    #
     status += "\n- uploading..."
     await update_userbot_message(message, message.text, status)
     thumb = await client.download_media(chat.photo.big_file_id)
@@ -167,12 +158,6 @@ async def record_audio(client, message: Message):
         if chat.username
         else chat.title
     )
-    """
-    await message.reply_voice(record_opus,
-                              quote=False,
-                              caption=caption,
-                              duration=duration)
-    """
     await message.reply_audio(record_opus,
                               quote=False,
                               caption=caption,
@@ -183,7 +168,6 @@ async def record_audio(client, message: Message):
     for f in [record_opus, thumb]:
         os.remove(f)
     open(record_raw, 'w').close()
-    # await message.delete()
 
 
 async def update_userbot_message(message: Message, text_user, text_bot):

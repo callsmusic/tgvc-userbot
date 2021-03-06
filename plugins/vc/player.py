@@ -25,8 +25,6 @@ import os
 from pyrogram import Client, filters, emoji
 from pyrogram.types import Message
 from pyrogram.methods.messages.download_media import DEFAULT_DOWNLOAD_DIR
-from pyrogram.raw.functions.channels import GetFullChannel
-from pyrogram.raw.functions.phone import LeaveGroupCall
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pytgcalls import GroupCall
@@ -62,16 +60,10 @@ async def join_voice_chat(client, message: Message):
                    & filters.regex("^!leave_vc$"))
 async def leave_voice_chat(client, message: Message):
     chat_id = message.chat.id
-    await leave_group_call(client, chat_id)
+    group_call = VOICE_CHATS[chat_id]
+    await group_call.stop()
     VOICE_CHATS.pop(chat_id, None)
     await update_userbot_message(message, message.text, " Left the Voice Chat")
-
-
-async def leave_group_call(client, chat_id):
-    peer = await client.resolve_peer(chat_id)
-    full_chat = await client.send(GetFullChannel(channel=peer))
-    chat_call = full_chat.full_chat.call
-    await client.send(LeaveGroupCall(call=chat_call, source=0))
 
 
 @Client.on_message(filters.text
