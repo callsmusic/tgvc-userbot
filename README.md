@@ -16,8 +16,21 @@ Made with [tgcalls](https://github.com/MarshalX/tgcalls) and [Pyrogram Smart Plu
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/dashezup/tgvc-userbot)
 
-- Session string can be exported [by using Pyrogram](https://github.com/ColinShark/Pyrogram-Snippets/blob/master/Snippets/generate_session.py)
-- Go to "Resources - worker" and enable the worker on Heroku dashboard after deploy the project
+- Session string can be exported by using Pyrogram
+  ```
+  # pip install Pyrogram TgCrypto
+  from pyrogram import Client
+
+  api_id = 1234567
+  api_hash = "0123456789abcdef0123456789abcdef"
+
+  with Client(":memory:", api_id, api_hash) as app, open("session.txt", "w+") as s_file:
+      session_string = app.export_session_string()
+      s_file.write(session_string)
+      print("Session string has been saved to session.txt")
+      print(session_string)
+  ```
+- Enable the worker after deploy the project to Heroku
 - Reply to an audio with `!play` in a Voice Chat enabled Telegram group to start using it
 
 ## Requirements

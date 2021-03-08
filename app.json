@@ -26,7 +26,7 @@
             "required": true
     },
     "SESSION_NAME": {
-            "description": "Session string which you can export with Pyrogram Client.export_session_string()",
+            "description": "Session string, read the README to learn how to export it with Pyrogram",
             "required": true
     }
   }
