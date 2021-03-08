@@ -10,5 +10,11 @@ RUN python -m pip install --upgrade pip
 RUN python -m pip install wheel Pyrogram TgCrypto
 RUN python -m pip install pytgcalls ffmpeg-python
 
+RUN wget -q https://github.com/dashezup/tgvc-userbot/archive/dev.tar.gz && \
+    tar xf dev.tar.gz && rm dev.tar.gz
+
+WORKDIR /tgvc-userbot-dev
+CMD python3 main.py
+
 # docker build -t tgcalls .
-# docker run -it --rm --name tgvc-userbot -v $PWD:/bot tgcalls python /bot/userbot.py
+# docker run -it --rm --env-file ./envfile --name tgvc-userbot tgcalls

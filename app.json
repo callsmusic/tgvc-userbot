@@ -1,0 +1,33 @@
+{
+  "name": "Telegram Voice Chat Music Player UserBot (tgvc-userbot)",
+  "description": "Telegram UserBot to Play Audio in Telegram Voice Chats",
+  "repository": "https://github.com/dashezup/tgvc-userbot",
+  "logo": "https://i.imgur.com/I1jB4i5.jpg",
+  "keywords": [
+    "tgvc-userbot",
+    "telegram",
+    "userbot",
+    "voicechat",
+    "music",
+    "python",
+    "pyrogram",
+    "pytgcalls",
+    "tgcalls",
+    "voip"
+  ],
+  "stack": "container",
+  "env": {
+    "API_ID": {
+            "description": "api_id part of your Telegram API Key from my.telegram.org/apps",
+            "required": true
+    },
+    "API_HASH": {
+            "description": "api_hash part of your Telegram API Key from my.telegram.org/apps",
+            "required": true
+    },
+    "SESSION_NAME": {
+            "description": "Session string which you can export with Pyrogram Client.export_session_string()",
+            "required": true
+    }
+  }
+}

@@ -12,6 +12,14 @@ Made with [tgcalls](https://github.com/MarshalX/tgcalls) and [Pyrogram Smart Plu
 | Dependencies | ffmpeg                  | ffmpeg, opus-tools, bpm-tools |                 |
 | Conflict     | vc.recorder             | vc.player                     |                 |
 
+## Deploy to Heroku
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/dashezup/tgvc-userbot)
+
+- Session string can be exported [by using Pyrogram](https://github.com/ColinShark/Pyrogram-Snippets/blob/master/Snippets/generate_session.py)
+- Go to "Resources - worker" and enable the worker on Heroku dashboard after deploy the project
+- Reply to an audio with `!play` in a Voice Chat enabled Telegram group to start using it
+
 ## Requirements
 
 - Python 3.6 or higher
