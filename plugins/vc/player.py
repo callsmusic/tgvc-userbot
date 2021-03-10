@@ -31,33 +31,31 @@ from pytgcalls import GroupCall
 import ffmpeg
 
 VOICE_CHATS = {}
+main_filter = (
+    filters.group
+    & filters.text
+    & filters.outgoing
+    & ~filters.edited
+    & ~filters.via_bot
+)
 
-
-@Client.on_message(filters.text
-                   & filters.outgoing
-                   & ~filters.edited
-                   & filters.regex("^!join_vc$"))
+@Client.on_message(main_filter & filters.regex("^!join_vc$"))
 async def join_voice_chat(client, message: Message):
     input_filename = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR,
                                   "input.raw")
     if message.chat.id in VOICE_CHATS:
-        await update_userbot_message(message, message.text, " Already joined")
+        response = " Already Joined the Voice Chat"
+        await update_userbot_message(message, message.text, response)
         return
     chat_id = message.chat.id
     group_call = GroupCall(client, input_filename)
     await group_call.start(chat_id, False)
     VOICE_CHATS[chat_id] = group_call
-    await update_userbot_message(
-        message,
-        message.text,
-        " Joined the Voice Chat"
-    )
+    response = " Joined the Voice Chat"
+    await update_userbot_message(message, message.text, response)
 
 
-@Client.on_message(filters.text
-                   & filters.outgoing
-                   & ~filters.edited
-                   & filters.regex("^!leave_vc$"))
+@Client.on_message(main_filter & filters.regex("^!leave_vc$"))
 async def leave_voice_chat(client, message: Message):
     chat_id = message.chat.id
     group_call = VOICE_CHATS[chat_id]
@@ -66,10 +64,7 @@ async def leave_voice_chat(client, message: Message):
     await update_userbot_message(message, message.text, " Left the Voice Chat")
 
 
-@Client.on_message(filters.text
-                   & filters.outgoing
-                   & ~filters.edited
-                   & filters.regex("^!list_vc$"))
+@Client.on_message(main_filter & filters.regex("^!list_vc$"))
 async def list_voice_chat(client, message: Message):
     if not VOICE_CHATS:
         await update_userbot_message(
@@ -89,20 +84,14 @@ async def list_voice_chat(client, message: Message):
     )
 
 
-@Client.on_message(filters.text
-                   & filters.outgoing
-                   & ~filters.edited
-                   & filters.regex("^!stop$"))
+@Client.on_message(main_filter & filters.regex("^!stop$"))
 async def stop_playing(_, message: Message):
     group_call = VOICE_CHATS[message.chat.id]
     group_call.stop_playout()
     await update_userbot_message(message, message.text, " Stopped Playing")
 
 
-@Client.on_message(filters.text
-                   & filters.outgoing
-                   & ~filters.edited
-                   & filters.regex("^!replay$"))
+@Client.on_message(main_filter & filters.regex("^!replay$"))
 async def restart_playing(client, message: Message):
     input_filename = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR,
                                   "input.raw")
@@ -126,10 +115,7 @@ async def restart_playing(client, message: Message):
     )
 
 
-@Client.on_message(filters.text
-                   & filters.outgoing
-                   & ~filters.edited
-                   & filters.regex("^!play$"))
+@Client.on_message(main_filter & filters.regex("^!play$"))
 async def play_track(client, message: Message):
     if not message.reply_to_message or not message.reply_to_message.audio:
         return
@@ -172,20 +158,14 @@ async def play_track(client, message: Message):
         await update_userbot_message(message, message.text, status)
 
 
-@Client.on_message(filters.text
-                   & filters.outgoing
-                   & ~filters.edited
-                   & filters.regex("^!mute$"))
+@Client.on_message(main_filter & filters.regex("^!mute$"))
 async def mute(_, message: Message):
     group_call = VOICE_CHATS[message.chat.id]
     group_call.set_is_mute(True)
     await update_userbot_message(message, message.text, " Muted")
 
 
-@Client.on_message(filters.text
-                   & filters.outgoing
-                   & ~filters.edited
-                   & filters.regex("^!unmute$"))
+@Client.on_message(main_filter & filters.regex("^!unmute$"))
 async def unmute(_, message: Message):
     group_call = VOICE_CHATS[message.chat.id]
     group_call.set_is_mute(False)
