@@ -39,6 +39,7 @@ main_filter = (
     & ~filters.via_bot
 )
 
+
 @Client.on_message(main_filter & filters.regex("^!join_vc$"))
 async def join_voice_chat(client, message: Message):
     input_filename = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR,

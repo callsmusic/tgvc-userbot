@@ -1,3 +1,4 @@
+"""!sysinfo use psutil to get system information"""
 from datetime import datetime
 import psutil
 from psutil._common import bytes2human
@@ -34,8 +35,9 @@ async def generate_sysinfo(workdir):
     dio = psutil.disk_io_counters()
     info['disk'] = (f"{bytes2human(du.used)} / {bytes2human(du.total)} "
                     f"({du.percent}%)")
-    info['disk io'] = (f"R {bytes2human(dio.read_bytes)} | "
-                       f"W {bytes2human(dio.write_bytes)}")
+    if dio:
+        info['disk io'] = (f"R {bytes2human(dio.read_bytes)} | "
+                           f"W {bytes2human(dio.write_bytes)}")
     # Network
     nio = psutil.net_io_counters()
     info['net io'] = (f"TX {bytes2human(nio.bytes_sent)} | "

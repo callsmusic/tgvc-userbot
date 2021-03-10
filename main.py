@@ -10,7 +10,8 @@ plugins = dict(
     root="plugins",
     include=[
         "vc.player",
-        "ping"
+        "ping",
+        "sysinfo"
     ]
 )
 

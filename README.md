@@ -6,15 +6,15 @@ This is also the source code of the userbot which is being used for playing DJ/L
 
 Made with [tgcalls](https://github.com/MarshalX/tgcalls) and [Pyrogram Smart Plugin](https://docs.pyrogram.org/topics/smart-plugins)
 
-|              | vc.player               | vc.recorder                   | ping            |
-|--------------|-------------------------|-------------------------------|-----------------|
-| Description  | Voice Chat Audio Player | Voice Chat Audio Recorder     | ping and uptime |
-| Dependencies | ffmpeg                  | ffmpeg, opus-tools, bpm-tools |                 |
-| Conflict     | vc.recorder             | vc.player                     |                 |
+|              | vc.player               | vc.recorder                   | ping            | sysinfo            |
+|--------------|-------------------------|-------------------------------|-----------------|--------------------|
+| Description  | Voice Chat Audio Player | Voice Chat Audio Recorder     | ping and uptime | System Information |
+| Dependencies | ffmpeg                  | ffmpeg, opus-tools, bpm-tools |                 |                    |
+| Conflict     | vc.recorder             | vc.player                     |                 |                    |
 
 ## Deploy to Heroku
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/dashezup/tgvc-userbot)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/dashezup/tgvc-userbot/tree/dev)
 
 - Session string can be exported by using Pyrogram
   ```
