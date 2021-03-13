@@ -4,6 +4,14 @@ import psutil
 from psutil._common import bytes2human
 from pyrogram import Client, filters
 
+self_or_contact_filter = filters.create(
+    lambda
+    _,
+    __,
+    message:
+    (message.from_user and message.from_user.is_contact) or message.outgoing
+)
+
 
 async def generate_sysinfo(workdir):
     # uptime
@@ -72,12 +80,12 @@ async def generate_sysinfo(workdir):
 
 @Client.on_message(filters.group
                    & filters.text
-                   & filters.outgoing
+                   & self_or_contact_filter
                    & ~filters.edited
                    & ~filters.via_bot
                    & filters.regex("^!sysinfo$"))
-async def get_sysinfo(client, message):
+async def get_sysinfo(client, m):
     response = "**System Information**:\n"
-    await message.edit_text(f"{response}`...`")
+    m_reply = await m.reply_text(f"{response}`...`")
     response += await generate_sysinfo(client.workdir)
-    await message.edit_text(response)
+    await m_reply.edit_text(response)

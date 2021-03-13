@@ -19,9 +19,17 @@ TIME_DURATION_UNITS = (
     ('sec', 1)
 )
 
+self_or_contact_filter = filters.create(
+    lambda
+    _,
+    __,
+    message:
+    (message.from_user and message.from_user.is_contact) or message.outgoing
+)
+
 
 # https://gist.github.com/borgstrom/936ca741e885a1438c374824efb038b3
-def _human_time_duration(seconds):
+async def _human_time_duration(seconds):
     if seconds == 0:
         return 'inf'
     parts = []
@@ -34,37 +42,32 @@ def _human_time_duration(seconds):
 
 
 @Client.on_message(filters.text
-                   & filters.outgoing
+                   & self_or_contact_filter
                    & ~filters.edited
+                   & ~filters.via_bot
                    & filters.regex("^!ping$"))
-async def ping_pong(_, message: Message):
+async def ping_pong(_, m: Message):
     """reply ping with pong and delete both messages"""
     start = time()
-    await message.edit_text("...")
+    m_reply = await m.reply_text("...")
     delta_ping = time() - start
-    await update_userbot_message(
-        message,
-        message.text,
-        f" ping: `{delta_ping * 1000:.3f} ms`"
+    await m_reply.edit_text(
+        f"{emoji.ROBOT} ping: `{delta_ping * 1000:.3f} ms`"
     )
 
 
 @Client.on_message(filters.text
-                   & filters.outgoing
+                   & self_or_contact_filter
                    & ~filters.edited
+                   & ~filters.via_bot
                    & filters.regex("^!uptime$"))
-async def get_uptime(_, message: Message):
+async def get_uptime(_, m: Message):
     """/uptime Reply with readable uptime and ISO 8601 start time"""
     current_time = datetime.utcnow()
     uptime_sec = (current_time - START_TIME).total_seconds()
-    uptime = _human_time_duration(int(uptime_sec))
-    await update_userbot_message(
-        message,
-        message.text,
-        f"\n- uptime: `{uptime}`\n- start time: `{START_TIME_ISO}`"
+    uptime = await _human_time_duration(int(uptime_sec))
+    await m.reply_text(
+        f"{emoji.ROBOT}\n"
+        f"- uptime: `{uptime}`\n"
+        f"- start time: `{START_TIME_ISO}`"
     )
-
-
-async def update_userbot_message(message: Message, text_user, text_bot):
-    await message.edit_text(f"{emoji.SPEECH_BALLOON} `{text_user}`\n"
-                            f"{emoji.ROBOT}{text_bot}")
