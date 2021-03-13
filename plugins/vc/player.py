@@ -212,7 +212,9 @@ async def join_group_call(client, m: Message):
                    & filters.regex("^!leave$"))
 @init_client_for_group_call
 async def leave_voice_chat(client, m: Message):
+    global playlist
     await group_call.stop()
+    playlist = []
     await m.reply_text(f"{emoji.ROBOT} left the voice chat")
 
 
@@ -238,10 +240,11 @@ async def list_voice_chat(client, m: Message):
                    & filters.regex("^!stop$"))
 @init_client_for_group_call
 async def stop_playing(_, m: Message):
-    global track_starttime
+    global track_starttime, playlist
     group_call.stop_playout()
-    await m.reply_text("{emoji.STOP_BUTTON} stopped playing")
+    await m.reply_text(f"{emoji.STOP_BUTTON} stopped playing")
     track_starttime = None
+    playlist = []
 
 
 @Client.on_message(main_filter
