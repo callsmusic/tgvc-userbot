@@ -311,7 +311,12 @@ async def unmute(_, m: Message):
 async def send_text(text):
     client = group_call.client
     chat_id = int("-100" + str(group_call.full_chat.id))
-    await client.send_message(chat_id, text, disable_web_page_preview=True)
+    await client.send_message(
+        chat_id,
+        text,
+        disable_web_page_preview=True,
+        disable_notification=True
+    )
 
 
 async def send_playlist():
