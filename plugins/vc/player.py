@@ -191,7 +191,8 @@ async def skip_track(client, m: Message):
             await m.reply_text("\n".join(text))
             await send_playlist()
         except (ValueError, TypeError):
-            await m.reply_text(f"{emoji.NO_ENTRY} invalid input")
+            await m.reply_text(f"{emoji.NO_ENTRY} invalid input",
+                               disable_web_page_preview=True)
 
 
 @Client.on_message(main_filter
