@@ -28,6 +28,7 @@ import ffmpeg
 
 group_call = GroupCall(None, path_to_log_file='')
 playlist = []
+m_playlist = {}
 track_start = {}
 
 USERBOT_HELP = f"""{emoji.LABEL}  **Common Commands**:
@@ -306,12 +307,13 @@ async def unmute(_, m: Message):
 async def send_text(text):
     client = group_call.client
     chat_id = int("-100" + str(group_call.full_chat.id))
-    await client.send_message(
+    message = await client.send_message(
         chat_id,
         text,
         disable_web_page_preview=True,
         disable_notification=True
     )
+    return message
 
 
 async def send_playlist():
@@ -326,7 +328,9 @@ async def send_playlist():
             f"**{i}**. **[{x.audio.title}]({x.link})**"
             for i, x in enumerate(playlist)
         ])
-    await send_text(pl)
+    if 'message' in m_playlist and m_playlist['message']:
+        await m_playlist['message'].delete()
+    m_playlist['message'] = await send_text(pl)
 
 
 async def skip_current_playing():
