@@ -55,6 +55,7 @@ to every member of the group. send `!help` to check more commands.
 |-----------------|--------------------------------------------------------|
 | /play           | reply with an audio to play/queue it, or show playlist |
 | /current        | show current playing time of current track             |
+| /repo           | show git repository of the userbot                     |
 | !help           | show help for commands                                 |
 
 - Admin commands, available to userbot account itself and its contacts
