@@ -26,10 +26,8 @@ from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pytgcalls import GroupCall
 import ffmpeg
 
-group_call = GroupCall(None, path_to_log_file='')
 playlist = []
 m_playlist = {}
-track_start = {}
 
 USERBOT_HELP = f"""{emoji.LABEL}  **Common Commands**:
 __available to group members of current voice chat__
@@ -73,6 +71,7 @@ self_or_contact_filter = filters.create(
 
 
 async def current_vc_filter(_, __, m: Message):
+    group_call = mp.group_call
     if not group_call.is_connected:
         return False
     chat_id = int("-100" + str(group_call.full_chat.id))
@@ -83,24 +82,66 @@ async def current_vc_filter(_, __, m: Message):
 current_vc = filters.create(current_vc_filter)
 
 
-def init_client_for_group_call(func):
-    async def wrapper(client, message: Message):
-        group_call.client = client
+# - class
 
-        return await func(client, message)
 
-    return wrapper
+class MusicPlayer(object):
+    def __init__(self):
+        self.group_call = GroupCall(None, path_to_log_file='')
+        self.client = None
+        self.chat_id = None
+        self.start_time = None
+
+    async def add_group_call(self, gc: GroupCall):
+        self.group_call = gc
+        self.client = gc.client
+        self.chat_id = int("-100" + str(gc.full_chat.id))
+
+    async def join_voice_chat(self, m: Message):
+        group_call = self.group_call
+        if group_call.is_connected:
+            await m.reply_text(f"{emoji.ROBOT} already joined a voice chat")
+            return
+        await group_call.start(m.chat.id)
+
+    async def update_start_time(self, reset=False):
+        self.start_time = (
+            None if reset
+            else datetime.utcnow().replace(microsecond=0)
+        )
+
+    async def pin_current_audio(self):
+        group_call = self.group_call
+        client = group_call.client
+        chat_id = int("-100" + str(group_call.full_chat.id))
+        try:
+            async for m in client.search_messages(chat_id,
+                                                  filter="pinned",
+                                                  limit=1):
+                if m.audio:
+                    await m.unpin()
+            await playlist[0].pin(True)
+        except ChatAdminRequired:
+            pass
+        except FloodWait:
+            pass
+
+
+mp = MusicPlayer()
 
 
 # - pytgcalls handlers
 
-@group_call.on_network_status_changed
+
+@mp.group_call.on_network_status_changed
 async def network_status_changed_handler(gc: GroupCall, is_connected: bool):
     if is_connected:
         await send_text(f"{emoji.CHECK_MARK_BUTTON}  Joined the voice chat")
+    else:
+        print("DISCONNECTED")
 
 
-@group_call.on_playout_ended
+@mp.group_call.on_playout_ended
 async def playout_ended_handler(group_call, filename):
     await skip_current_playing()
 
@@ -109,8 +150,8 @@ async def playout_ended_handler(group_call, filename):
 
 
 @Client.on_message(main_filter & current_vc & filters.regex("^(\\/|!)play$"))
-@init_client_for_group_call
 async def play_track(client, m: Message):
+    group_call = mp.group_call
     # show playlist
     if not m.reply_to_message or not m.reply_to_message.audio:
         await send_playlist()
@@ -133,10 +174,10 @@ async def play_track(client, m: Message):
             DEFAULT_DOWNLOAD_DIR,
             f"{playlist[0].audio.file_unique_id}.raw"
         )
-        track_start['time'] = datetime.utcnow().replace(microsecond=0)
+        await mp.update_start_time()
         await m_status.delete()
         print(f"- START PLAYING: {playlist[0].audio.title}")
-        await pin_current_audio()
+        await mp.pin_current_audio()
     await send_playlist()
     for track in playlist[:2]:
         await download_audio(track)
@@ -145,14 +186,14 @@ async def play_track(client, m: Message):
 @Client.on_message(main_filter
                    & current_vc
                    & filters.regex("^(\\/|!)current$"))
-@init_client_for_group_call
 async def show_current_playing_time(client, m: Message):
-    if not track_start['time']:
+    start_time = mp.start_time
+    if not start_time:
         await m.reply_text(f"{emoji.PLAY_BUTTON} unknown")
         return
     utcnow = datetime.utcnow().replace(microsecond=0)
     await playlist[0].reply_text(
-        f"{emoji.PLAY_BUTTON}  {utcnow - track_start['time']} / "
+        f"{emoji.PLAY_BUTTON}  {utcnow - start_time} / "
         f"{timedelta(seconds=playlist[0].audio.duration)}",
         disable_notification=True
     )
@@ -161,7 +202,6 @@ async def show_current_playing_time(client, m: Message):
 @Client.on_message(main_filter
                    & (self_or_contact_filter | current_vc)
                    & filters.regex("^(\\/|!)help$"))
-@init_client_for_group_call
 async def show_help(client, m: Message):
     await m.reply_text(USERBOT_HELP)
 
@@ -170,7 +210,6 @@ async def show_help(client, m: Message):
                    & self_or_contact_filter
                    & current_vc
                    & filters.command("skip", prefixes="!"))
-@init_client_for_group_call
 async def skip_track(client, m: Message):
     if len(m.command) == 1:
         await skip_current_playing()
@@ -197,11 +236,11 @@ async def skip_track(client, m: Message):
 @Client.on_message(main_filter
                    & self_or_contact_filter
                    & filters.regex("^!join$"))
-@init_client_for_group_call
 async def join_group_call(client, m: Message):
-    if group_call.is_connected \
-            and m.chat.id == int("-100" + str(group_call.full_chat.id)):
-        await m.reply_text(f"{emoji.ROBOT} already joined the voice chat")
+    group_call = mp.group_call
+    group_call.client = client
+    if group_call.is_connected:
+        await m.reply_text(f"{emoji.ROBOT} already joined a voice chat")
         return
     await group_call.start(m.chat.id)
 
@@ -210,8 +249,8 @@ async def join_group_call(client, m: Message):
                    & self_or_contact_filter
                    & current_vc
                    & filters.regex("^!leave$"))
-@init_client_for_group_call
 async def leave_voice_chat(client, m: Message):
+    group_call = mp.group_call
     await group_call.stop()
     playlist.clear()
     await m.reply_text(f"{emoji.ROBOT} left the voice chat")
@@ -220,8 +259,8 @@ async def leave_voice_chat(client, m: Message):
 @Client.on_message(main_filter
                    & self_or_contact_filter
                    & filters.regex("^!vc$"))
-@init_client_for_group_call
 async def list_voice_chat(client, m: Message):
+    group_call = mp.group_call
     if group_call.is_connected:
         chat_id = int("-100" + str(group_call.full_chat.id))
         chat = await client.get_chat(chat_id)
@@ -237,11 +276,11 @@ async def list_voice_chat(client, m: Message):
                    & self_or_contact_filter
                    & current_vc
                    & filters.regex("^!stop$"))
-@init_client_for_group_call
 async def stop_playing(_, m: Message):
+    group_call = mp.group_call
     group_call.stop_playout()
     await m.reply_text(f"{emoji.STOP_BUTTON} stopped playing")
-    track_start['time'] = None
+    await mp.update_start_time(reset=True)
     playlist.clear()
 
 
@@ -249,12 +288,12 @@ async def stop_playing(_, m: Message):
                    & self_or_contact_filter
                    & current_vc
                    & filters.regex("^!replay$"))
-@init_client_for_group_call
 async def restart_playing(client, m: Message):
+    group_call = mp.group_call
     if not playlist:
         return
     group_call.restart_playout()
-    track_start['time'] = datetime.utcnow().replace(microsecond=0)
+    await mp.update_start_time()
     await m.reply_text(
         f"{emoji.COUNTERCLOCKWISE_ARROWS_BUTTON}  "
         "playing from the beginning..."
@@ -285,8 +324,8 @@ async def clean_raw_pcm(client, m: Message):
                    & self_or_contact_filter
                    & current_vc
                    & filters.regex("^!mute$"))
-@init_client_for_group_call
 async def mute(_, m: Message):
+    group_call = mp.group_call
     group_call.set_is_mute(True)
     await m.reply_text(f"{emoji.MUTED_SPEAKER} muted")
 
@@ -295,8 +334,8 @@ async def mute(_, m: Message):
                    & self_or_contact_filter
                    & current_vc
                    & filters.regex("^!unmute$"))
-@init_client_for_group_call
 async def unmute(_, m: Message):
+    group_call = mp.group_call
     group_call.set_is_mute(False)
     await m.reply_text(f"{emoji.SPEAKER_MEDIUM_VOLUME} unmuted")
 
@@ -305,6 +344,7 @@ async def unmute(_, m: Message):
 
 
 async def send_text(text):
+    group_call = mp.group_call
     client = group_call.client
     chat_id = int("-100" + str(group_call.full_chat.id))
     message = await client.send_message(
@@ -334,10 +374,11 @@ async def send_playlist():
 
 
 async def skip_current_playing():
+    group_call = mp.group_call
     if not playlist:
         return
     if len(playlist) == 1:
-        track_start['time'] = datetime.utcnow().replace(microsecond=0)
+        await mp.update_start_time()
         return
     client = group_call.client
     download_dir = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR)
@@ -345,11 +386,11 @@ async def skip_current_playing():
         download_dir,
         f"{playlist[1].audio.file_unique_id}.raw"
     )
-    track_start['time'] = datetime.utcnow().replace(microsecond=0)
+    await mp.update_start_time()
     # remove old track from playlist
     old_track = playlist.pop(0)
     print(f"- START PLAYING: {playlist[0].audio.title}")
-    await pin_current_audio()
+    await mp.pin_current_audio()
     await send_playlist()
     os.remove(os.path.join(
         download_dir,
@@ -361,6 +402,7 @@ async def skip_current_playing():
 
 
 async def download_audio(m: Message):
+    group_call = mp.group_call
     client = group_call.client
     raw_file = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR,
                             f"{m.audio.file_unique_id}.raw")
@@ -375,19 +417,3 @@ async def download_audio(m: Message):
             loglevel='error'
         ).overwrite_output().run()
         os.remove(original_file)
-
-
-async def pin_current_audio():
-    client = group_call.client
-    chat_id = int("-100" + str(group_call.full_chat.id))
-    try:
-        async for m in client.search_messages(chat_id,
-                                              filter="pinned",
-                                              limit=1):
-            if m.audio:
-                await m.unpin()
-        await playlist[0].pin(True)
-    except ChatAdminRequired:
-        pass
-    except FloodWait:
-        pass
