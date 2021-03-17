@@ -95,21 +95,8 @@ current_vc = filters.create(current_vc_filter)
 class MusicPlayer(object):
     def __init__(self):
         self.group_call = GroupCall(None, path_to_log_file='')
-        self.client = None
         self.chat_id = None
         self.start_time = None
-
-    async def add_group_call(self, gc: GroupCall):
-        self.group_call = gc
-        self.client = gc.client
-        self.chat_id = int("-100" + str(gc.full_chat.id))
-
-    async def join_voice_chat(self, m: Message):
-        group_call = self.group_call
-        if group_call.is_connected:
-            await m.reply_text(f"{emoji.ROBOT} already joined a voice chat")
-            return
-        await group_call.start(m.chat.id)
 
     async def update_start_time(self, reset=False):
         self.start_time = (
@@ -143,9 +130,11 @@ mp = MusicPlayer()
 @mp.group_call.on_network_status_changed
 async def network_status_changed_handler(gc: GroupCall, is_connected: bool):
     if is_connected:
-        await send_text(f"{emoji.CHECK_MARK_BUTTON}  Joined the voice chat")
+        mp.chat_id = int("-100" + str(gc.full_chat.id))
+        await send_text(f"{emoji.CHECK_MARK_BUTTON} joined the voice chat")
     else:
-        print("DISCONNECTED")
+        await send_text(f"{emoji.CROSS_MARK_BUTTON} left the voice chat")
+        mp.chat_id = None
 
 
 @mp.group_call.on_playout_ended
@@ -258,9 +247,9 @@ async def join_group_call(client, m: Message):
                    & filters.regex("^!leave$"))
 async def leave_voice_chat(client, m: Message):
     group_call = mp.group_call
-    await group_call.stop()
     playlist.clear()
-    await m.reply_text(f"{emoji.ROBOT} left the voice chat")
+    group_call.input_filename = ''
+    await group_call.stop()
 
 
 @Client.on_message(main_filter
@@ -360,7 +349,7 @@ async def show_repository(_, m: Message):
 async def send_text(text):
     group_call = mp.group_call
     client = group_call.client
-    chat_id = int("-100" + str(group_call.full_chat.id))
+    chat_id = mp.chat_id
     message = await client.send_message(
         chat_id,
         text,
