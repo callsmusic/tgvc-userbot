@@ -25,7 +25,9 @@ Made with [tgcalls](https://github.com/MarshalX/tgcalls) and [Pyrogram Smart Plu
       print(session_string)
   ```
 - Enable the worker after deploy the project to Heroku
-- Reply to an audio with `!play` in a Voice Chat enabled Telegram group to start using it
+- Send `!join` to a voice chat enabled group chat from userbot account itself or its contacts
+- Reply to an audio with `/play` to start playing it in the voice chat, every member of the group
+  can use the `!play` and other common commands now, check `!help` for more commands
 
 There are some other branchs for other plugins,
 you can press the "Deploy to Heroku" button there to deploy it as well.
