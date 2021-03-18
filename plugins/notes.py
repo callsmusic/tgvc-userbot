@@ -73,11 +73,7 @@ async def show_notes(_, m: Message):
         disable_web_page_preview=True
     )
     await m.delete()
-    if m.command[0] == "notes":
-        if 'list' in response and response['list']:
-            await response['list'].delete()
-        response['list'] = m_response
-    else:
-        if 'm' in response and response['m']:
-            await response['m'].delete()
-        response['m'] = m_response
+    key = 'list' if m.command[0] == 'notes' else 'note'
+    if response.get(key) is not None:
+        await response[key].delete()
+    response[key] = m_response

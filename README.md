@@ -43,6 +43,19 @@ you can press the "Deploy to Heroku" button there to deploy it as well.
 - Automatically pin the current playing track
 - Show current playing position of the audio
 
+**How to Use the Player plugin**
+
+1. Start the userbot
+2. send `!join` to a voice chat enabled group chat from userbot account itself
+   or its contacts, be sure to make the userbot account as group admin and
+   give it at least the following permissions:
+   - Delete messages
+   - Pin messages
+   - Manage voice chats (optional)
+3. reply to an audio with `/play` to start playing it in the voice chat, every
+   member of the group can use common commands such like `/play`, `/current` and `!help` now.
+4. check `!help` for more commands
+
 **Commands**
 
 The main plugin is `vc.player` which has the following command commands and admin commands.
@@ -82,15 +95,6 @@ to every member of the group. send `!help` to check more commands.
 | ping    | !ping    | show ping time      |
 | uptime  | !uptime  | show userbot uptime |
 | sysinfo | !sysinfo | show system info    |
-
-**How to Use the Player plugin**
-
-1. Start the userbot
-2. send `!join` to a voice chat enabled group chat from userbot account itself
-   or its contacts
-3. reply to an audio with `/play` to start playing it in the voice chat, every
-   member of the group can use common commands such like `/play`, `/current` and `!help` now.
-4. check `!help` for more commands
 
 ## Requirements
 
