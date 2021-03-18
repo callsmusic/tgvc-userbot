@@ -10,14 +10,12 @@ notes = {}
 url = {}
 response = {}
 
-notes['notes'] = """**Notes**:
+notes['notes'] = f"""{emoji.SPIRAL_NOTEPAD} **Notes** (/notes):
 
 `#notes` __list all notes__
 `#heroku` __deploy to heroku__
 `#raw` __raw pcm file size__
-`#repo` __repository__
-
-#notes"""
+`#repo` __repository__"""
 
 url['readme_heroku'] = (
     "https://github.com/dashezup/tgvc-userbot#deploy-to-heroku"
@@ -27,7 +25,7 @@ url['heroku'] = (
     "https://github.com/dashezup/tgvc-userbot/tree/dev"
 )
 url['replit'] = "https://repl.it/@Leorio/stringsessiongen#main.py"
-notes['heroku'] = f"""**Heroku**:
+notes['heroku'] = f"""{emoji.LABEL} **Heroku** (/notes #heroku):
 
 {emoji.BACKHAND_INDEX_POINTING_RIGHT} [Deploy to Heroku]({url['heroku']})
 {emoji.SPIRAL_NOTEPAD} [README]({url['readme_heroku']})
@@ -37,11 +35,9 @@ notes['heroku'] = f"""**Heroku**:
 __choose one of the two__
 
 - Run [the code]({url['readme_heroku']}) by yourself
-- [replit]({url['replit']}), use it at your own risk
+- [replit]({url['replit']}), use it at your own risk"""
 
-`#notes` / #heroku"""
-
-notes['raw'] = """**RAW PCM file size**:
+notes['raw'] = f"""{emoji.LABEL} **RAW PCM file size** (/notes #raw):
 
 `filesize_in_bytes / second == channel * sample_rate * bit_depth / 8`
 
@@ -52,22 +48,21 @@ notes['raw'] = """**RAW PCM file size**:
 |      10M |  109.86M |
 |       1H |  659.17M |
 |       2H |    1.28G |
-|       4H |    2.57G |```
-
-`#notes` / #raw"""
+|       4H |    2.57G |```"""
 
 url['repo'] = "https://github.com/dashezup/tgvc-userbot"
-notes['repo'] = f"""**Repository**:
+notes['repo'] = f"""{emoji.LABEL} **Repository** (/notes #repo):
 
-{emoji.ROBOT} [Telegram Voice Chat Userbot]({url['repo']})
-
-`#notes` / #repo"""
+{emoji.ROBOT} [Telegram Voice Chat Userbot (tgvc-userbot)]({url['repo']})"""
 
 
-@Client.on_message(filters.chat("VCSets")
-                   & filters.text
-                   & ~filters.edited
-                   & filters.command(list(notes.keys()), prefixes="#"))
+@Client.on_message(
+    filters.chat("VCSets")
+    & filters.text
+    & ~filters.edited
+    & (filters.command(list(notes.keys()), prefixes="#")
+       | filters.command("notes", prefixes="/"))
+)
 async def show_notes(_, m: Message):
     if len(m.command) != 1:
         return
@@ -78,6 +73,11 @@ async def show_notes(_, m: Message):
         disable_web_page_preview=True
     )
     await m.delete()
-    if 'm' in response and response['m']:
-        await response['m'].delete()
-    response['m'] = m_response
+    if m.command[0] == "notes":
+        if 'list' in response and response['list']:
+            await response['list'].delete()
+        response['list'] = m_response
+    else:
+        if 'm' in response and response['m']:
+            await response['m'].delete()
+        response['m'] = m_response
