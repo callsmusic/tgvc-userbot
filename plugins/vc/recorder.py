@@ -5,6 +5,9 @@ Dependencies:
 - opus-tools
 - bpm-tools
 
+Requirements (pip):
+- ffmpeg-python
+
 Start the userbot and send !record to a voice chat
 enabled group chat to start recording for 30 seconds
 """

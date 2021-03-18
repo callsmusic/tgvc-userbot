@@ -97,6 +97,7 @@ to every member of the group. send `!help` to check more commands.
 - Python 3.6 or higher
 - A [Telegram API key](https://docs.pyrogram.org/intro/quickstart#enjoy-the-api) and a Telegram account
 - Choose plugins you need, install dependencies which listed above and run `pip install -U -r requirements.txt` to install python package dependencies as well
+- [FFmpeg](https://www.ffmpeg.org/)
 
 ## Run
 
@@ -119,6 +120,7 @@ root = plugins
 include =
     vc.player
     ping
+    sysinfo
 ```
 
 ### Method 2: write your own userbot.py
