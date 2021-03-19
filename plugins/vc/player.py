@@ -22,8 +22,6 @@ from datetime import datetime, timedelta
 from pyrogram import Client, filters, emoji
 from pyrogram.types import Message
 from pyrogram.methods.messages.download_media import DEFAULT_DOWNLOAD_DIR
-from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
-from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pytgcalls import GroupCall
 import ffmpeg
 
