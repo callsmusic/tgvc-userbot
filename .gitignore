@@ -13,3 +13,6 @@ __pycache__/
 /*.session
 /*.session-journal
 /downloads/
+
+# pytgcalls
+/*.so

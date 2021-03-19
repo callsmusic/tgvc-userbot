@@ -50,7 +50,6 @@ you can press the "Deploy to Heroku" button there to deploy it as well.
    or its contacts, be sure to make the userbot account as group admin and
    give it at least the following permissions:
    - Delete messages
-   - Pin messages
    - Manage voice chats (optional)
 3. reply to an audio with `/play` to start playing it in the voice chat, every
    member of the group can use common commands such like `/play`, `/current` and `!help` now.

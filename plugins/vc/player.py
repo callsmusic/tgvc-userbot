@@ -5,7 +5,6 @@ Dependencies:
 
 Required group admin permissions:
 - Delete messages
-- Pin messages
 - Manage voice chats (optional)
 
 How to use:
@@ -109,23 +108,6 @@ class MusicPlayer(object):
             else datetime.utcnow().replace(microsecond=0)
         )
 
-    async def pin_current_audio(self):
-        group_call = self.group_call
-        client = group_call.client
-        playlist = self.playlist
-        chat_id = int("-100" + str(group_call.full_chat.id))
-        try:
-            async for m in client.search_messages(chat_id,
-                                                  filter="pinned",
-                                                  limit=1):
-                if m.audio:
-                    await m.unpin()
-            await playlist[0].pin(True)
-        except ChatAdminRequired:
-            pass
-        except FloodWait:
-            pass
-
     async def send_playlist(self):
         playlist = self.playlist
         if not playlist:
@@ -199,7 +181,6 @@ async def play_track(client, m: Message):
         await mp.update_start_time()
         await m_status.delete()
         print(f"- START PLAYING: {playlist[0].audio.title}")
-        await mp.pin_current_audio()
     await mp.send_playlist()
     for track in playlist[:2]:
         await download_audio(track)
@@ -285,7 +266,6 @@ async def join_group_call(client, m: Message):
                    & filters.regex("^!leave$"))
 async def leave_voice_chat(client, m: Message):
     group_call = mp.group_call
-    await mp.playlist[0].unpin()
     mp.playlist.clear()
     group_call.input_filename = ''
     await group_call.stop()
@@ -458,7 +438,6 @@ async def skip_current_playing():
     # remove old track from playlist
     old_track = playlist.pop(0)
     print(f"- START PLAYING: {playlist[0].audio.title}")
-    await mp.pin_current_audio()
     await mp.send_playlist()
     os.remove(os.path.join(
         download_dir,
