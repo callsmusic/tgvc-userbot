@@ -285,6 +285,7 @@ async def join_group_call(client, m: Message):
                    & filters.regex("^!leave$"))
 async def leave_voice_chat(client, m: Message):
     group_call = mp.group_call
+    await mp.playlist[0].unpin()
     mp.playlist.clear()
     group_call.input_filename = ''
     await group_call.stop()
