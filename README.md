@@ -85,6 +85,8 @@ to every member of the group. send `!help` to check more commands.
 | !stop          | stop playing                     |
 | !replay        | play from the beginning          |
 | !clean         | remove unused RAW PCM files      |
+| !pause         | pause playing                    |
+| !resume        | resume playing                   |
 | !mute          | mute the VC userbot              |
 | !unmute        | unmute the VC userbot            |
 
