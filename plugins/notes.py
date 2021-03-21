@@ -15,7 +15,8 @@ notes['notes'] = f"""{emoji.SPIRAL_NOTEPAD} **Notes** (/notes):
 `#notes` __list all notes__
 `#heroku` __deploy to heroku__
 `#raw` __raw pcm file size__
-`#repo` __repository__"""
+`#repo` __repository__
+`#musicbot` __tgmusicbot__"""
 
 url['readme_heroku'] = (
     "https://github.com/dashezup/tgvc-userbot#deploy-to-heroku"
@@ -54,6 +55,19 @@ url['repo'] = "https://github.com/dashezup/tgvc-userbot"
 notes['repo'] = f"""{emoji.LABEL} **Repository** (/notes #repo):
 
 {emoji.ROBOT} [Telegram Voice Chat Userbot (tgvc-userbot)]({url['repo']})"""
+
+url['tmbh'] = (
+    "https://heroku.com/deploy?template=https://github.com/dashezup/tgmusicbot"
+)
+notes['musicbot'] = (
+    f"""{emoji.ROBOT} **Telegram Music Bot** (/notes #musicbot):
+__bot for downloading music from YouTube/SoundCloud/Mixcloud__
+
+**Repository**: [GitHub](https://github.com/dashezup/tgmusicbot)
+**License**: AGPL-3.0-or-later
+
+{emoji.BACKHAND_INDEX_POINTING_RIGHT} [Deploy to Heroku]({url['tmbh']})"""
+)
 
 
 @Client.on_message(
