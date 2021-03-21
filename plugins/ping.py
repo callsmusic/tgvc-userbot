@@ -1,7 +1,5 @@
 """!ping reply with pong
 !uptime check uptime
-
-dashezup/tgbot: plugins/ping.py
 """
 from time import time
 from datetime import datetime
