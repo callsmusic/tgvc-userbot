@@ -1,4 +1,4 @@
-"""Pyrogram Smart Plugin for notes in t.me/VCSets
+"""Pyrogram Smart Plugin for notes
 
 Required chat permission:
 - Delete messages
@@ -23,7 +23,7 @@ url['readme_heroku'] = (
 )
 url['heroku'] = (
     "https://heroku.com/deploy?template="
-    "https://github.com/callsmusic/tgvc-userbot/tree/dev"
+    "https://github.com/ChankitSaini/QueerMusic/tree/dev"
 )
 url['replit'] = "https://repl.it/@Leorio/stringsessiongen#main.py"
 notes['heroku'] = f"""{emoji.LABEL} **Heroku** (/notes #heroku):
@@ -51,20 +51,20 @@ notes['raw'] = f"""{emoji.LABEL} **RAW PCM file size** (/notes #raw):
 |       2H |    1.28G |
 |       4H |    2.57G |```"""
 
-url['repo'] = "https://github.com/callsmusic/tgvc-userbot"
+url['repo'] = "hhttps://github.com/ChankitSaini/QueerMusic"
 notes['repo'] = f"""{emoji.LABEL} **Repository** (/notes #repo):
 
-{emoji.ROBOT} [Telegram Voice Chat Userbot (tgvc-userbot)]({url['repo']})"""
+{emoji.ROBOT} [Telegram Voice Chat Userbot (QueerMusic)]({url['repo']})"""
 
 url['tmbh'] = (
     "https://heroku.com/deploy?template="
-    "https://github.com/callsmusic/tgmusicbot"
+    "https://github.com/ChankitSaini/QueerMusic"
 )
 notes['musicbot'] = (
     f"""{emoji.ROBOT} **Telegram Music Bot** (/notes #musicbot):
 __bot for downloading music from YouTube/SoundCloud/Mixcloud__
 
-**Repository**: [GitHub](https://github.com/callsmusic/tgmusicbot)
+**Repository**: [GitHub](https://github.com/ChankitSaini/tgmusicbot)
 **License**: AGPL-3.0-or-later
 
 {emoji.BACKHAND_INDEX_POINTING_RIGHT} [Deploy to Heroku]({url['tmbh']})"""
