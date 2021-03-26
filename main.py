@@ -1,5 +1,5 @@
 from os import environ
-# import logging
+import logging
 from pyrogram import Client, idle
 
 api_id = int(environ["API_ID"])
@@ -14,11 +14,13 @@ plugins = dict(
         "sysinfo"
     ]
 )
+logging.basicConfig(level=logging.INFO)
+AnonyBot = Client('Anonymous-Sender',
+                  api_id=var.API_ID,
+                  api_hash=var.API_HASH,
+                  bot_token=var.BOT_TOKEN,
+                  plugins=dict(root="plugins"))
 
-app = Client(session_name, api_id, api_hash, plugins=plugins)
-# logging.basicConfig(level=logging.INFO)
-app.start()
+AnonyBot.run()
+# 
 print('>>> USERBOT STARTED')
-idle()
-app.stop()
-print('\n>>> USERBOT STOPPED')
