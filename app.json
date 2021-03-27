@@ -15,7 +15,6 @@
     "tgcalls",
     "voip"
   ],
-  "stack": "container",
   "env": {
     "API_ID": {
             "description": "api_id part of your Telegram API Key from my.telegram.org/apps",
@@ -28,6 +27,19 @@
     "SESSION_NAME": {
             "description": "Session string, read the README to learn how to export it with Pyrogram",
             "required": true
+    },
+    "PLUGIN": {
+            "description": "Smart Plugin, must be one of these: player/recorder/radio",
+            "value": "player",
+            "required": true
     }
-  }
+  },
+  "buildpacks": [
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ]
 }

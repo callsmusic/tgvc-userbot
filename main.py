@@ -9,7 +9,7 @@ session_name = environ["SESSION_NAME"]
 plugins = dict(
     root="plugins",
     include=[
-        "vc.player",
+        "vc." + environ["PLUGIN"],
         "ping",
         "sysinfo"
     ]
