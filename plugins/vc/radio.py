@@ -41,7 +41,9 @@ async def start(client, message: Message):
         GROUP_CALLS[message.chat.id] = group_call
 
     if not message.reply_to_message or len(message.command) < 2:
-        await message.reply_text('You forgot to replay list of stations or pass a station ID')
+        await message.reply_text(
+            'You forgot to replay list of stations or pass a station ID'
+        )
         return
 
     process = FFMPEG_PROCESSES.get(message.chat.id)
@@ -54,7 +56,9 @@ async def start(client, message: Message):
     for line in msg_lines:
         line_prefix = f'{station_id}. '
         if line.startswith(line_prefix):
-            station_stream_url = line.replace(line_prefix, '').replace('\n', '')
+            station_stream_url = (
+                line.replace(line_prefix, '').replace('\n', '')
+            )
             break
 
     if not station_stream_url:
