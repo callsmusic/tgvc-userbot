@@ -9,6 +9,7 @@ __pycache__/
 /*.py
 !/main.py
 !/userbot.py
+!/generate-pyrogram-session-string.py
 /*.ini
 /*.session
 /*.session-journal

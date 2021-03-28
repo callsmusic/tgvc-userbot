@@ -12,27 +12,13 @@ It's recommended to use [tgmusicbot](https://github.com/callsmusic/tgmusicbot) a
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/callsmusic/tgvc-userbot/tree/dev)
 
-- Session string can be exported by using Pyrogram
-  ```
-  # pip install Pyrogram TgCrypto
-  from pyrogram import Client
-
-  api_id = 1234567
-  api_hash = "0123456789abcdef0123456789abcdef"
-
-  with Client(":memory:", api_id, api_hash) as app, open("session.txt", "w+") as s_file:
-      session_string = app.export_session_string()
-      s_file.write(session_string)
-      print("Session string has been saved to session.txt")
-      print(session_string)
-  ```
+- Generate Pyrogram session string by running [generate-pyrogram-session-string.py](generate-pyrogram-session-string.py) by yourself or through [Replit](https://replit.com/@dashezup/generate-pyrogram-session-string)
 - Enable the worker after deploy the project to Heroku
 - Send `!join` to a voice chat enabled group chat from userbot account itself or its contacts
 - Reply to an audio with `/play` to start playing it in the voice chat, every member of the group
   can use the `!play` and other common commands now, check `!help` for more commands
 
-There are some other branchs for other plugins,
-you can press the "Deploy to Heroku" button there to deploy it as well.
+Change the value of `PLUGIN` variable if you want to try other voice chat plugins.
 
 ## Introduction
 
