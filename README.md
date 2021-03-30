@@ -14,6 +14,7 @@ It's recommended to use [tgmusicbot](https://github.com/callsmusic/tgmusicbot) a
 
 - Generate Pyrogram session string by running [generate-pyrogram-session-string.py](generate-pyrogram-session-string.py) by yourself or through [Replit](https://replit.com/@dashezup/generate-pyrogram-session-string)
 - Enable the worker after deploy the project to Heroku
+- send `!ping`, `!uptime`, or `!sysinfo` from userbot account itself or its contacts to check if the userbot is running
 - Send `!join` to a voice chat enabled group chat from userbot account itself or its contacts
 - Reply to an audio with `/play` to start playing it in the voice chat, every member of the group
   can use the `!play` and other common commands now, check `!help` for more commands
