@@ -141,7 +141,7 @@ async def network_status_changed_handler(gc: GroupCall, is_connected: bool):
 
 
 @mp.group_call.on_playout_ended
-async def playout_ended_handler(group_call, filename):
+async def playout_ended_handler(_, __):
     await skip_current_playing()
 
 
@@ -204,7 +204,7 @@ async def play_track(client, m: Message):
 @Client.on_message(main_filter
                    & current_vc
                    & filters.regex("^(\\/|!)current$"))
-async def show_current_playing_time(client, m: Message):
+async def show_current_playing_time(_, m: Message):
     start_time = mp.start_time
     playlist = mp.playlist
     if not start_time:
@@ -225,7 +225,7 @@ async def show_current_playing_time(client, m: Message):
 @Client.on_message(main_filter
                    & (self_or_contact_filter | current_vc)
                    & filters.regex("^(\\/|!)help$"))
-async def show_help(client, m: Message):
+async def show_help(_, m: Message):
     if mp.msg.get('help') is not None:
         await mp.msg['help'].delete()
     mp.msg['help'] = await m.reply_text(USERBOT_HELP, quote=False)
@@ -236,7 +236,7 @@ async def show_help(client, m: Message):
                    & self_or_contact_filter
                    & current_vc
                    & filters.command("skip", prefixes="!"))
-async def skip_track(client, m: Message):
+async def skip_track(_, m: Message):
     playlist = mp.playlist
     if len(m.command) == 1:
         await skip_current_playing()
@@ -278,7 +278,7 @@ async def join_group_call(client, m: Message):
                    & self_or_contact_filter
                    & current_vc
                    & filters.regex("^!leave$"))
-async def leave_voice_chat(client, m: Message):
+async def leave_voice_chat(_, m: Message):
     group_call = mp.group_call
     mp.playlist.clear()
     group_call.input_filename = ''
