@@ -12,7 +12,7 @@ plugins = dict(
         "vc." + environ["PLUGIN"],
         "ping",
         "sysinfo",
-        "inlinesearch"
+        "inline"
     ]
 )
 
