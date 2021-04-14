@@ -159,9 +159,9 @@ async def play_track(client, m: Message):
     playlist = mp.playlist
     # check audio
     if m.audio:
-        if m.audio.duration > 600:
+        if m.audio.duration > 36000:
             reply = await m.reply_text(
-                f"{emoji.ROBOT} audio which duration longer than 10 min "
+                f"{emoji.ROBOT} audio which duration longer than 10 Hours "
                 "won't be automatically added to playlist"
             )
             await _delay_delete_messages((reply, ), DELETE_DELAY)
