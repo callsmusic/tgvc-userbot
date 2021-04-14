@@ -11,7 +11,8 @@ plugins = dict(
     include=[
         "vc." + environ["PLUGIN"],
         "ping",
-        "sysinfo"
+        "sysinfo",
+        "inline"
     ]
 )
 
