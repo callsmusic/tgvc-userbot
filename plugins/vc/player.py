@@ -52,27 +52,27 @@ USERBOT_HELP = f"""{emoji.LABEL}  **Common Commands**:
 __available to group members of current voice chat__
 __starts with / (slash) or ! (exclamation mark)__
 
-/play  reply with an audio to play/queue it, or show playlist
-/current  show current playing time of current track
-/repo  show git repository of the userbot
-`!help`  show help for commands
+\u2022 **/play**  reply with an audio to play/queue it, or show playlist
+\u2022 **/current**  show current playing time of current track
+\u2022 **/repo**  show git repository of the userbot
+\u2022 `!help`  show help for commands
 
 
 {emoji.LABEL}  **Admin Commands**:
 __available to userbot account itself and its contacts__
 __starts with ! (exclamation mark)__
 
-`!skip` [n] ...  skip current or n where n >= 2
-`!join`  join voice chat of current group
-`!leave`  leave current voice chat
-`!vc`  check which VC is joined
-`!stop`  stop playing
-`!replay`  play from the beginning
-`!clean`  remove unused RAW PCM files
-`!pause` pause playing
-`!resume` resume playing
-`!mute`  mute the VC userbot
-`!unmute`  unmute the VC userbot
+\u2022 `!skip` [n] ...  skip current or n where n >= 2
+\u2022 `!join`  join voice chat of current group
+\u2022 `!leave`  leave current voice chat
+\u2022 `!vc`  check which VC is joined
+\u2022 `!stop`  stop playing
+\u2022 `!replay`  play from the beginning
+\u2022 `!clean`  remove unused RAW PCM files
+\u2022 `!pause` pause playing
+\u2022 `!resume` resume playing
+\u2022 `!mute`  mute the VC userbot
+\u2022 `!unmute`  unmute the VC userbot
 """
 
 USERBOT_REPO = f"""{emoji.ROBOT} **Telegram Voice Chat UserBot**
