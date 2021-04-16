@@ -34,14 +34,17 @@ How to use:
   can use the !play command now
 - check !help for more commands
 """
-import os
+
 import asyncio
+import os
 from datetime import datetime, timedelta
+
 from pyrogram import Client, filters, emoji
-from pyrogram.types import Message
 from pyrogram.methods.messages.download_media import DEFAULT_DOWNLOAD_DIR
-from pytgcalls import GroupCall
-import ffmpeg
+from pyrogram.types import Message
+
+from utils.filters import main_filter, self_or_contact_filter
+from utils.vc import mp
 
 DELETE_DELAY = 8
 
@@ -80,20 +83,6 @@ USERBOT_REPO = f"""{emoji.ROBOT} **Telegram Voice Chat UserBot**
 
 # - Pyrogram filters
 
-main_filter = (
-    filters.group
-    & filters.text
-    & ~filters.edited
-    & ~filters.via_bot
-)
-self_or_contact_filter = filters.create(
-    lambda
-    _,
-    __,
-    message:
-    (message.from_user and message.from_user.is_contact) or message.outgoing
-)
-
 
 async def current_vc_filter(_, __, m: Message):
     group_call = mp.group_call
@@ -104,63 +93,8 @@ async def current_vc_filter(_, __, m: Message):
         return True
     return False
 
+
 current_vc = filters.create(current_vc_filter)
-
-
-# - class
-
-
-class MusicPlayer(object):
-    def __init__(self):
-        self.group_call = GroupCall(None, path_to_log_file='')
-        self.chat_id = None
-        self.start_time = None
-        self.playlist = []
-        self.msg = {}
-
-    async def update_start_time(self, reset=False):
-        self.start_time = (
-            None if reset
-            else datetime.utcnow().replace(microsecond=0)
-        )
-
-    async def send_playlist(self):
-        playlist = self.playlist
-        if not playlist:
-            pl = f"{emoji.NO_ENTRY} empty playlist"
-        else:
-            if len(playlist) == 1:
-                pl = f"{emoji.REPEAT_SINGLE_BUTTON} **Playlist**:\n"
-            else:
-                pl = f"{emoji.PLAY_BUTTON} **Playlist**:\n"
-            pl += "\n".join([
-                f"**{i}**. **[{x.audio.title}]({x.link})**"
-                for i, x in enumerate(playlist)
-            ])
-        if mp.msg.get('playlist') is not None:
-            await mp.msg['playlist'].delete()
-        mp.msg['playlist'] = await send_text(pl)
-
-
-mp = MusicPlayer()
-
-
-# - pytgcalls handlers
-
-
-@mp.group_call.on_network_status_changed
-async def network_status_changed_handler(gc: GroupCall, is_connected: bool):
-    if is_connected:
-        mp.chat_id = int("-100" + str(gc.full_chat.id))
-        await send_text(f"{emoji.CHECK_MARK_BUTTON} joined the voice chat")
-    else:
-        await send_text(f"{emoji.CROSS_MARK_BUTTON} left the voice chat")
-        mp.chat_id = None
-
-
-@mp.group_call.on_playout_ended
-async def playout_ended_handler(_, __):
-    await skip_current_playing()
 
 
 # - Pyrogram handlers
@@ -182,7 +116,7 @@ async def play_track(client, m: Message):
                 f"{emoji.ROBOT} audio which duration longer than 10 min "
                 "won't be automatically added to playlist"
             )
-            await _delay_delete_messages((reply, ), DELETE_DELAY)
+            await _delay_delete_messages((reply,), DELETE_DELAY)
             return
         m_audio = m
     elif m.reply_to_message and m.reply_to_message.audio:
@@ -203,7 +137,7 @@ async def play_track(client, m: Message):
         m_status = await m.reply_text(
             f"{emoji.INBOX_TRAY} downloading and transcoding..."
         )
-        await download_audio(playlist[0])
+        await mp.download_audio(playlist[0])
         group_call.input_filename = os.path.join(
             client.workdir,
             DEFAULT_DOWNLOAD_DIR,
@@ -214,7 +148,7 @@ async def play_track(client, m: Message):
         print(f"- START PLAYING: {playlist[0].audio.title}")
     await mp.send_playlist()
     for track in playlist[:2]:
-        await download_audio(track)
+        await mp.download_audio(track)
     if not m.audio:
         await m.delete()
 
@@ -257,7 +191,7 @@ async def show_help(_, m: Message):
 async def skip_track(_, m: Message):
     playlist = mp.playlist
     if len(m.command) == 1:
-        await skip_current_playing()
+        await mp.skip_current_playing()
     else:
         try:
             items = list(dict.fromkeys(m.command[1:]))
@@ -376,7 +310,7 @@ async def resume_playing(_, m: Message):
     if mp.msg.get('pause') is not None:
         await mp.msg['pause'].delete()
     await m.delete()
-    await _delay_delete_messages((reply, ), DELETE_DELAY)
+    await _delay_delete_messages((reply,), DELETE_DELAY)
 
 
 @Client.on_message(main_filter
@@ -385,7 +319,7 @@ async def resume_playing(_, m: Message):
                    & filters.regex("^!clean$"))
 async def clean_raw_pcm(client, m: Message):
     download_dir = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR)
-    all_fn = os.listdir(download_dir)
+    all_fn: list[str] = os.listdir(download_dir)
     for track in mp.playlist[:2]:
         track_fn = f"{track.audio.file_unique_id}.raw"
         if track_fn in all_fn:
@@ -437,66 +371,6 @@ async def show_repository(_, m: Message):
 
 
 # - Other functions
-
-
-async def send_text(text):
-    group_call = mp.group_call
-    client = group_call.client
-    chat_id = mp.chat_id
-    message = await client.send_message(
-        chat_id,
-        text,
-        disable_web_page_preview=True,
-        disable_notification=True
-    )
-    return message
-
-
-async def skip_current_playing():
-    group_call = mp.group_call
-    playlist = mp.playlist
-    if not playlist:
-        return
-    if len(playlist) == 1:
-        await mp.update_start_time()
-        return
-    client = group_call.client
-    download_dir = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR)
-    group_call.input_filename = os.path.join(
-        download_dir,
-        f"{playlist[1].audio.file_unique_id}.raw"
-    )
-    await mp.update_start_time()
-    # remove old track from playlist
-    old_track = playlist.pop(0)
-    print(f"- START PLAYING: {playlist[0].audio.title}")
-    await mp.send_playlist()
-    os.remove(os.path.join(
-        download_dir,
-        f"{old_track.audio.file_unique_id}.raw")
-    )
-    if len(playlist) == 1:
-        return
-    await download_audio(playlist[1])
-
-
-async def download_audio(m: Message):
-    group_call = mp.group_call
-    client = group_call.client
-    raw_file = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR,
-                            f"{m.audio.file_unique_id}.raw")
-    if not os.path.isfile(raw_file):
-        original_file = await m.download()
-        ffmpeg.input(original_file).output(
-            raw_file,
-            format='s16le',
-            acodec='pcm_s16le',
-            ac=2,
-            ar='48k',
-            loglevel='error'
-        ).overwrite_output().run()
-        os.remove(original_file)
-
 
 async def _delay_delete_messages(messages: tuple, delay: int):
     await asyncio.sleep(delay)
