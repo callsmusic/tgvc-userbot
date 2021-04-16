@@ -19,7 +19,8 @@ It's recommended to use [tgmusicbot](https://github.com/callsmusic/tgmusicbot) a
 - Reply to an audio with `/play` to start playing it in the voice chat, every member of the group
   can use the `!play` and other common commands now, check `!help` for more commands
 
-Change the value of `PLUGIN` variable if you want to try other voice chat plugins.
+Check [smart-plugins](https://github.com/callsmusic/tgvc-userbot/tree/smart-plugins) branch
+If you want to use `radio` or `recorder` plugin.
 
 ## Introduction
 
@@ -47,7 +48,7 @@ Change the value of `PLUGIN` variable if you want to try other voice chat plugin
 **Commands**
 
 The main plugin is `vc.player` which has the following command commands and admin commands.
-After start the bot, send `!join` to a voice chat enabeld group chat from userbot account
+After start the bot, send `!join` to a voice chat enabled group chat from userbot account
 itself or its contacts, and then common commands like `/play` and `/current` will be available
 to every member of the group. send `!help` to check more commands.
 
@@ -142,11 +143,6 @@ idle()
 app.stop()
 print('\n>>> USERBOT STOPPED')
 ```
-
-## Notes
-
-- Read module docstrings of [plugins/](plugins) you are going to use at
-  the beginning of the file for extra notes
 
 # License
 

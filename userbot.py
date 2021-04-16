@@ -1,7 +1,16 @@
 # import logging
 from pyrogram import Client, idle
 
-app = Client("tgvc")
+PLUGINS = dict(
+    root="plugins",
+    include=[
+        "vc.player",
+        "ping",
+        "sysinfo"
+    ]
+)
+
+app = Client("tgvc", plugins=PLUGINS)
 # logging.basicConfig(level=logging.INFO)
 app.start()
 print('>>> USERBOT STARTED')
