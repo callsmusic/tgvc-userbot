@@ -10,7 +10,7 @@ It's recommended to use [tgmusicbot](https://github.com/callsmusic/tgmusicbot) a
 
 ## Deploy to Heroku
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/callsmusic/tgvc-userbot/tree/dev)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/callsmusic/tgvc-userbot/tree/smart-plugins)
 
 - Generate Pyrogram session string by running [generate-pyrogram-session-string.py](generate-pyrogram-session-string.py) by yourself or through [Replit](https://replit.com/@dashezup/generate-pyrogram-session-string)
 - Enable the worker after deploy the project to Heroku
