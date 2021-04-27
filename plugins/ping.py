@@ -24,7 +24,6 @@ from datetime import datetime
 from pyrogram import Client, filters, emoji
 from pyrogram.types import Message
 
-# DELAY_DELETE = 60
 START_TIME = datetime.utcnow()
 START_TIME_ISO = START_TIME.replace(microsecond=0).isoformat()
 TIME_DURATION_UNITS = (
