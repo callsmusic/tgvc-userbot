@@ -26,6 +26,7 @@ Get your Telegram API Key from:
 https://my.telegram.org/apps
 """
 import asyncio
+
 from pyrogram import Client
 
 
@@ -42,6 +43,7 @@ async def main():
             "Done, your Pyrogram session string has been sent to "
             "Saved Messages of your Telegram account!"
         )
+
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()

@@ -18,8 +18,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 !ping reply with pong
 !uptime check uptime
 """
-from time import time
 from datetime import datetime
+from time import time
+
 from pyrogram import Client, filters, emoji
 from pyrogram.types import Message
 
@@ -34,10 +35,7 @@ TIME_DURATION_UNITS = (
 )
 
 self_or_contact_filter = filters.create(
-    lambda
-    _,
-    __,
-    message:
+    lambda _, __, message:
     (message.from_user and message.from_user.is_contact) or message.outgoing
 )
 
