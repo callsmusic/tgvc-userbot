@@ -29,7 +29,7 @@
             "required": true
     },
     "PLUGIN": {
-            "description": "Voice Chat Smart Plugin to enable, must be one of: player/recorder/radio",
+            "description": "Voice Chat Smart Plugin to enable, must be one of: player/channel/recorder/radio",
             "value": "player",
             "required": true
     }

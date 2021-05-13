@@ -13,7 +13,7 @@ along with this userbot.
 
 ## Deploy to Heroku
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/callsmusic/tgvc-userbot/tree/smart-plugins)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/callsmusic/tgvc-userbot/tree/dev)
 
 - Generate Pyrogram session string by
   running [generate-pyrogram-session-string.py](generate-pyrogram-session-string.py)
@@ -35,7 +35,10 @@ plugins.
 - Automatically pin the current playing track
 - Show current playing position of the audio
 
-**How to Use the Player plugin**
+**Plugin**: vc.`player`
+
+Commands only works in groups, userbot account itself and contacts can use any
+commands, all members can use common commands after the userbot join the VC
 
 1. Start the userbot, try `!ping`, `!uptime` or `!sysinfo` command to check if
    the bot was running
@@ -48,6 +51,15 @@ plugins.
    member of the group can use common commands such like `/play`, `/current`
    and `!help` now.
 4. check `!help` for more commands
+
+**Plugin**: vc.`channel`
+
+Almost same as `player` plugin but commands only works in Saved Messages,
+`!join` takes arguments to be able to join group or channel voice chats.
+
+**Plugin**: `ping` and `sysinfo`
+
+Commands only works for userbot account itself and its contacts.
 
 ## Requirements
 
@@ -98,7 +110,8 @@ plugins = dict(
     root="plugins",
     include=[
         "vc.player",
-        "ping"
+        "ping",
+        "sysinfo"
     ]
 )
 
