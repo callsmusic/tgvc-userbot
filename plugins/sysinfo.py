@@ -1,41 +1,26 @@
-"""
-tgvc-userbot, Telegram Voice Chat Userbot
-Copyright (C) 2021  Dash Eclipse
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-!sysinfo use psutil to get system information
-"""
+"""!sysinfo use psutil to get system information"""
 from datetime import datetime
-
 import psutil
-# noinspection PyProtectedMember
 from psutil._common import bytes2human
 from pyrogram import Client, filters
 
 self_or_contact_filter = filters.create(
-    lambda _, __, message:
+    lambda
+    _,
+    __,
+    message:
     (message.from_user and message.from_user.is_contact) or message.outgoing
 )
 
 
 async def generate_sysinfo(workdir):
     # uptime
-    info = {
-        'boot': (datetime.fromtimestamp(psutil.boot_time())
-                 .strftime("%Y-%m-%d %H:%M:%S"))
-    }
+    info = {}
+    info['boot'] = (
+        datetime
+        .fromtimestamp(psutil.boot_time())
+        .strftime("%Y-%m-%d %H:%M:%S")
+    )
     # CPU
     cpu_freq = psutil.cpu_freq().current
     if cpu_freq >= 1000:
@@ -76,9 +61,21 @@ async def generate_sysinfo(workdir):
         info['temp'] = f"{temperatures}\u00b0C"
     info = {f"{key}:": value for (key, value) in info.items()}
     max_len = max(len(x) for x in info)
-    return ("```"
-            + "\n".join([f"{x:<{max_len}} {y}" for x, y in info.items()])
-            + "```")
+    return (
+        "```"
+        + "\n".join([f"{x:<{max_len}} {y}" for x, y in info.items()])
+        + "```"
+    )
+    """
+    partition_info = []
+    for part in psutil.disk_partitions():
+        mp = part.mountpoint
+        du = psutil.disk_usage(mp)
+        partition_info.append(f"{part.device} {mp} "
+                              f"{part.fstype} "
+                              f"{du.used} / {du.total} {du.percent}")
+    partition_info = ",".join(partition_info)
+    """
 
 
 @Client.on_message(filters.group
