@@ -1,4 +1,21 @@
-"""Play and Control Audio playing in Telegram Voice Chat
+"""
+tgvc-userbot, Telegram Voice Chat Userbot
+Copyright (C) 2021  Dash Eclipse
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Play and Control Audio playing in Telegram Voice Chat
 
 Dependencies:
 - ffmpeg
@@ -16,42 +33,46 @@ How to use:
   can use the !play command now
 - check !help for more commands
 """
-import os
 import asyncio
+import os
 from datetime import datetime, timedelta
-from pyrogram import Client, filters, emoji
-from pyrogram.types import Message
-from pyrogram.methods.messages.download_media import DEFAULT_DOWNLOAD_DIR
-from pytgcalls import GroupCall
+
+# noinspection PyPackageRequirements
 import ffmpeg
+from pyrogram import Client, filters, emoji
+from pyrogram.methods.messages.download_media import DEFAULT_DOWNLOAD_DIR
+from pyrogram.types import Message
+from pytgcalls import GroupCall
 
 DELETE_DELAY = 8
+DURATION_AUTOPLAY_MIN = 10
+DURATION_PLAY_HOUR = 3
 
 USERBOT_HELP = f"""{emoji.LABEL}  **Common Commands**:
 __available to group members of current voice chat__
 __starts with / (slash) or ! (exclamation mark)__
 
-/play  reply with an audio to play/queue it, or show playlist
-/current  show current playing time of current track
-/repo  show git repository of the userbot
-`!help`  show help for commands
+\u2022 **/play**  reply with an audio to play/queue it, or show playlist
+\u2022 **/current**  show current playing time of current track
+\u2022 **/repo**  show git repository of the userbot
+\u2022 `!help`  show help for commands
 
 
 {emoji.LABEL}  **Admin Commands**:
 __available to userbot account itself and its contacts__
 __starts with ! (exclamation mark)__
 
-`!skip` [n] ...  skip current or n where n >= 2
-`!join`  join voice chat of current group
-`!leave`  leave current voice chat
-`!vc`  check which VC is joined
-`!stop`  stop playing
-`!replay`  play from the beginning
-`!clean`  remove unused RAW PCM files
-`!pause` pause playing
-`!resume` resume playing
-`!mute`  mute the VC userbot
-`!unmute`  unmute the VC userbot
+\u2022 `!skip` [n] ...  skip current or n where n >= 2
+\u2022 `!join`  join voice chat of current group
+\u2022 `!leave`  leave current voice chat
+\u2022 `!vc`  check which VC is joined
+\u2022 `!stop`  stop playing
+\u2022 `!replay`  play from the beginning
+\u2022 `!clean`  remove unused RAW PCM files
+\u2022 `!pause` pause playing
+\u2022 `!resume` resume playing
+\u2022 `!mute`  mute the VC userbot
+\u2022 `!unmute`  unmute the VC userbot
 """
 
 USERBOT_REPO = f"""{emoji.ROBOT} **Telegram Voice Chat UserBot**
@@ -59,20 +80,14 @@ USERBOT_REPO = f"""{emoji.ROBOT} **Telegram Voice Chat UserBot**
 - Repository: [GitHub](https://github.com/callsmusic/tgvc-userbot)
 - License: AGPL-3.0-or-later"""
 
-
 # - Pyrogram filters
 
-main_filter = (
-    filters.group
-    & filters.text
-    & ~filters.edited
-    & ~filters.via_bot
-)
+main_filter = (filters.group
+               & filters.text
+               & ~filters.edited
+               & ~filters.via_bot)
 self_or_contact_filter = filters.create(
-    lambda
-    _,
-    __,
-    message:
+    lambda _, __, message:
     (message.from_user and message.from_user.is_contact) or message.outgoing
 )
 
@@ -85,6 +100,7 @@ async def current_vc_filter(_, __, m: Message):
     if m.chat.id == chat_id:
         return True
     return False
+
 
 current_vc = filters.create(current_vc_filter)
 
@@ -159,16 +175,24 @@ async def play_track(client, m: Message):
     playlist = mp.playlist
     # check audio
     if m.audio:
-        if m.audio.duration > 600:
+        if m.audio.duration > (DURATION_AUTOPLAY_MIN * 60):
             reply = await m.reply_text(
-                f"{emoji.ROBOT} audio which duration longer than 10 min "
-                "won't be automatically added to playlist"
+                f"{emoji.ROBOT} audio which duration longer than "
+                f"{str(DURATION_AUTOPLAY_MIN)} min won't be automatically "
+                "added to playlist"
             )
-            await _delay_delete_messages((reply, ), DELETE_DELAY)
+            await _delay_delete_messages((reply,), DELETE_DELAY)
             return
         m_audio = m
     elif m.reply_to_message and m.reply_to_message.audio:
         m_audio = m.reply_to_message
+        if m_audio.audio.duration > (DURATION_PLAY_HOUR * 60 * 60):
+            reply = await m.reply_text(
+                f"{emoji.ROBOT} audio which duration longer than "
+                f"{str(DURATION_PLAY_HOUR)} hours won't be added to playlist"
+            )
+            await _delay_delete_messages((reply,), DELETE_DELAY)
+            return
     else:
         await mp.send_playlist()
         await m.delete()
@@ -358,7 +382,7 @@ async def resume_playing(_, m: Message):
     if mp.msg.get('pause') is not None:
         await mp.msg['pause'].delete()
     await m.delete()
-    await _delay_delete_messages((reply, ), DELETE_DELAY)
+    await _delay_delete_messages((reply,), DELETE_DELAY)
 
 
 @Client.on_message(main_filter
@@ -367,7 +391,7 @@ async def resume_playing(_, m: Message):
                    & filters.regex("^!clean$"))
 async def clean_raw_pcm(client, m: Message):
     download_dir = os.path.join(client.workdir, DEFAULT_DOWNLOAD_DIR)
-    all_fn = os.listdir(download_dir)
+    all_fn: list[str] = os.listdir(download_dir)
     for track in mp.playlist[:2]:
         track_fn = f"{track.audio.file_unique_id}.raw"
         if track_fn in all_fn:

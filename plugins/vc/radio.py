@@ -4,10 +4,10 @@ https://github.com/MarshalX/tgcalls/blob/main/examples/radio_as_smart_plugin.py
 """
 import signal
 
+# noinspection PyPackageRequirements
 import ffmpeg  # pip install ffmpeg-python
 from pyrogram import Client, filters
 from pyrogram.types import Message
-
 from pytgcalls import GroupCall  # pip install pytgcalls
 
 # Example of pinned message in a chat:
@@ -24,6 +24,7 @@ To stop use !stop command
 # Commands available only for anonymous admins
 async def anon_filter(_, __, m: Message):
     return bool(m.from_user is None and m.sender_chat)
+
 
 anonymous = filters.create(anon_filter)
 

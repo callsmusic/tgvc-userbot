@@ -1,12 +1,29 @@
-"""!ping reply with pong
+"""
+tgvc-userbot, Telegram Voice Chat Userbot
+Copyright (C) 2021  Dash Eclipse
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+!ping reply with pong
 !uptime check uptime
 """
-from time import time
 from datetime import datetime
+from time import time
+
 from pyrogram import Client, filters, emoji
 from pyrogram.types import Message
 
-# DELAY_DELETE = 60
 START_TIME = datetime.utcnow()
 START_TIME_ISO = START_TIME.replace(microsecond=0).isoformat()
 TIME_DURATION_UNITS = (
@@ -18,10 +35,7 @@ TIME_DURATION_UNITS = (
 )
 
 self_or_contact_filter = filters.create(
-    lambda
-    _,
-    __,
-    message:
+    lambda _, __, message:
     (message.from_user and message.from_user.is_contact) or message.outgoing
 )
 
@@ -45,7 +59,7 @@ async def _human_time_duration(seconds):
                    & ~filters.via_bot
                    & filters.regex("^!ping$"))
 async def ping_pong(_, m: Message):
-    """reply ping with pong and delete both messages"""
+    """Reply ping with pong and delete both messages"""
     start = time()
     m_reply = await m.reply_text("...")
     delta_ping = time() - start

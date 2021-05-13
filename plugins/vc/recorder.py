@@ -1,4 +1,21 @@
-"""Record Audio from Telegram Voice Chat
+"""
+tgvc-userbot, Telegram Voice Chat Userbot
+Copyright (C) 2021  Dash Eclipse
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Record Audio from Telegram Voice Chat
 
 Dependencies:
 - ffmpeg
@@ -11,14 +28,16 @@ Requirements (pip):
 Start the userbot and send !record to a voice chat
 enabled group chat to start recording for 30 seconds
 """
-import os
 import asyncio
+import os
 import subprocess
 from datetime import datetime
+
+# noinspection PyPackageRequirements
+import ffmpeg
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pytgcalls import GroupCall, GroupCallAction
-import ffmpeg
 
 group_call = GroupCall(None, path_to_log_file='')
 
