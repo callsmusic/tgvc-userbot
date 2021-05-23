@@ -24,7 +24,7 @@ along with this userbot.
 Change the value of `PLUGIN` variable if you want to try other voice chat
 plugins.
 
-## Deploy to Railway
+## Deploy on Railway
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https%3A%2F%2Fgithub.com%2Fcallsmusic%2Ftgvc-userbot&envs=API_ID%2CAPI_HASH%2CSESSION_NAME%2CPLUGIN&API_IDDesc=api_id+part+of+your+Telegram+API+Key+from+my.telegram.org%2Fapps&API_HASHDesc=api_hash+part+of+your+Telegram+API+Key+from+my.telegram.org%2Fapps&SESSION_NAMEDesc=Session+string%2C+read+the+README+to+learn+how+to+export+it+with+Pyrogram&PLUGINDesc=Voice+Chat+Smart+Plugin+to+enable%2C+must+be+one+of%3A+player%2Fchannel%2Frecorder%2Fradio&PLUGINDefault=player)
 
