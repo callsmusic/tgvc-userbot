@@ -277,7 +277,10 @@ async def skip_track(_, m: Message):
                     text.append(f"{emoji.WASTEBASKET} {i}. **{audio}**")
                 else:
                     text.append(f"{emoji.CROSS_MARK} {i}")
-            reply = await m.reply_text("\n".join(text))
+            reply = await m.reply_text(
+                "\n".join(text),
+                disable_web_page_preview=True
+            )
             await mp.send_playlist()
         except (ValueError, TypeError):
             reply = await m.reply_text(f"{emoji.NO_ENTRY} invalid input",
