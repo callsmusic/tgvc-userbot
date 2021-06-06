@@ -24,6 +24,10 @@ along with this userbot.
 Change the value of `PLUGIN` variable if you want to try other voice chat
 plugins.
 
+It's known that there are usually audio lagging issues on Heroku deployment of
+this project because Heroku provide very limited resources, in this case you
+can try some other platforms such like Qovery or self-hosting it.
+
 ## Introduction
 
 **Features**
@@ -127,6 +131,17 @@ print('\n>>> USERBOT STOPPED')
 
 - Read module docstrings of [plugins/](plugins) you are going to use at the
   beginning of the file for extra notes
+
+## Self-hosting
+
+This userbot should run fine on any cloud server. Popular choices of cloud
+server providers are DigitalOcean, Vultr and Hetzner. You can use one of the
+following referral links to sign up on Vultr to give the project author
+credits in case you want to try Vultr.
+
+<a href="https://www.vultr.com/?ref=7321667"><img src="https://www.vultr.com/media/banners/banner_728x90.png" width="728" height="90"></a>
+
+Or [Give100get25 - Vultr](https://www.vultr.com/?ref=8559837-6G)
 
 # License
 
