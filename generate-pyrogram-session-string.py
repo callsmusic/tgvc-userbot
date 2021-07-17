@@ -24,6 +24,8 @@ requirements:
 
 Get your Telegram API Key from:
 https://my.telegram.org/apps
+
+Replit: https://replit.com/@dashezup/generate-pyrogram-session-string
 """
 import asyncio
 

@@ -11,23 +11,6 @@ and [Pyrogram Smart Plugin](https://docs.pyrogram.org/topics/smart-plugins)
 It's recommended to use [tgmusicbot](https://github.com/callsmusic/tgmusicbot)
 along with this userbot.
 
-## Deploy to Heroku
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/callsmusic/tgvc-userbot/tree/dev)
-
-- Generate Pyrogram session string by
-  running [generate-pyrogram-session-string.py](generate-pyrogram-session-string.py)
-  by yourself or
-  through [Replit](https://replit.com/@dashezup/generate-pyrogram-session-string)
-- Enable the worker after deploy the project to Heroku
-
-Change the value of `PLUGIN` variable if you want to try other voice chat
-plugins.
-
-It's known that there are usually audio lagging issues on Heroku deployment of
-this project because Heroku provide very limited resources, in this case you
-can try some other platforms such like Qovery or self-hosting it.
-
 ## Introduction
 
 **Features**
