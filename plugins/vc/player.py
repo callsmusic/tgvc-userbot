@@ -42,7 +42,8 @@ import ffmpeg
 from pyrogram import Client, filters, emoji
 from pyrogram.methods.messages.download_media import DEFAULT_DOWNLOAD_DIR
 from pyrogram.types import Message
-from pytgcalls import GroupCall
+from pyrogram.utils import MAX_CHANNEL_ID
+from pytgcalls import GroupCallFactory, GroupCallFileAction
 
 DELETE_DELAY = 8
 DURATION_AUTOPLAY_MIN = 10
@@ -94,7 +95,7 @@ self_or_contact_filter = filters.create(
 
 async def current_vc_filter(_, __, m: Message):
     group_call = mp.group_call
-    if not group_call.is_connected:
+    if not (group_call and group_call.is_connected):
         return False
     chat_id = int("-100" + str(group_call.full_chat.id))
     if m.chat.id == chat_id:
@@ -110,7 +111,8 @@ current_vc = filters.create(current_vc_filter)
 
 class MusicPlayer(object):
     def __init__(self):
-        self.group_call = GroupCall(None, path_to_log_file='')
+        self.group_call = None
+        self.client = None
         self.chat_id = None
         self.start_time = None
         self.playlist = []
@@ -146,17 +148,15 @@ mp = MusicPlayer()
 # - pytgcalls handlers
 
 
-@mp.group_call.on_network_status_changed
-async def network_status_changed_handler(gc: GroupCall, is_connected: bool):
+async def network_status_changed_handler(context, is_connected: bool):
     if is_connected:
-        mp.chat_id = int("-100" + str(gc.full_chat.id))
+        mp.chat_id = MAX_CHANNEL_ID - context.full_chat.id
         await send_text(f"{emoji.CHECK_MARK_BUTTON} joined the voice chat")
     else:
         await send_text(f"{emoji.CROSS_MARK_BUTTON} left the voice chat")
         mp.chat_id = None
 
 
-@mp.group_call.on_playout_ended
 async def playout_ended_handler(_, __):
     await skip_current_playing()
 
@@ -293,12 +293,16 @@ async def skip_track(_, m: Message):
                    & filters.regex("^!join$"))
 async def join_group_call(client, m: Message):
     group_call = mp.group_call
-    group_call.client = client
-    if group_call.is_connected:
+    if not group_call:
+        mp.group_call = GroupCallFactory(client).get_file_group_call()
+        mp.group_call.add_handler(network_status_changed_handler,
+                                  GroupCallFileAction.NETWORK_STATUS_CHANGED)
+        mp.group_call.add_handler(playout_ended_handler,
+                                  GroupCallFileAction.PLAYOUT_ENDED)
+        await mp.group_call.start(m.chat.id)
+        await m.delete()
+    if group_call and group_call.is_connected:
         await m.reply_text(f"{emoji.ROBOT} already joined a voice chat")
-        return
-    await group_call.start(m.chat.id)
-    await m.delete()
 
 
 @Client.on_message(main_filter
@@ -318,7 +322,7 @@ async def leave_voice_chat(_, m: Message):
                    & filters.regex("^!vc$"))
 async def list_voice_chat(client, m: Message):
     group_call = mp.group_call
-    if group_call.is_connected:
+    if group_call and group_call.is_connected:
         chat_id = int("-100" + str(group_call.full_chat.id))
         chat = await client.get_chat(chat_id)
         reply = await m.reply_text(
