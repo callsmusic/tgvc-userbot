@@ -8,7 +8,7 @@ DJ/Live Sets music in [VC DJ/Live Sets](https://t.me/VCSets) group.
 Made with [tgcalls](https://github.com/MarshalX/tgcalls)
 and [Pyrogram Smart Plugin](https://docs.pyrogram.org/topics/smart-plugins)
 
-It's recommended to use [tgmusicbot](https://github.com/callsmusic/tgmusicbot)
+It's recommended to use [tgmusicbot](https://github.com/khayal-0508/tgmusicbot)
 along with this userbot.
 
 ## Introduction
