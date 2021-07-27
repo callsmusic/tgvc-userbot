@@ -13,7 +13,7 @@ along with this userbot.
 
 ### 💜 Heroku
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/khayal-0508/tgvc-musicbot)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/khayal-0508/tgvc-userbot)
 
 
 ## Introduction
