@@ -1,5 +1,7 @@
 # Telegram Voice Chat UserBot [![Mentioned in Awesome Telegram Calls](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/tgcalls/awesome-tgcalls)
 
+![Python Workflow](https://github.com/callsmusic/tgvc-userbot/actions/workflows/python-package.yml/badge.svg)
+
 A Telegram UserBot to Play Audio in Voice Chats.
 
 This is also the source code of the userbot which is being used for playing
