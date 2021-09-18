@@ -13,6 +13,15 @@ and [Pyrogram Smart Plugin](https://docs.pyrogram.org/topics/smart-plugins)
 It's recommended to use [tgmusicbot](https://github.com/callsmusic/tgmusicbot)
 along with this userbot.
 
+# Deploy to Heroku
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/NeuroticCoders/tgvc-userbot/tree/main)
+
+- Generate Pyrogram session string by running generate-pyrogram-session-string.py by yourself or through Replit
+- Enable the worker after deploy the project to Heroku.
+
+ Change the value of `PLUGIN` variable if you want to try other voice chat plugins.
+
 ## Introduction
 
 **Features**
