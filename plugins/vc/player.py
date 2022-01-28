@@ -134,7 +134,7 @@ class MusicPlayer(object):
             else:
                 pl = f"{emoji.PLAY_BUTTON} **Playlist**:\n"
             pl += "\n".join([
-                f"**{i}**. **[{x.audio.title}]({x.link})**"
+                f"**{i}**. **[{x.audio.title if x.audio.title else x.audio.file_name.replace('_', ' ') if x.audio.file_name else None}]({x.link})**"
                 for i, x in enumerate(playlist)
             ])
         if mp.msg.get('playlist') is not None:
